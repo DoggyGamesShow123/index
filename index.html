@@ -1,97 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Game Launcher</title>
+  <meta charset="UTF-8">
+  <title>SSv1</title>
 
-    <!-- REQUIRED TAB ICON -->
-    <link rel="icon" href="https://raw.githubusercontent.com/DoggyGamesShow123/index/refs/heads/main/icons/Saturn.ico">
+  <!-- Favicon -->
+  https://raw.githubusercontent.com/DoggyGamesShow123/SSv1/refs/heads/main/favicon.ico
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #0e1027;
-            color: white;
-            text-align: center;
-        }
-
-        header {
-            padding: 20px;
-            background: #171b43;
-            font-size: 2rem;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 20px;
-            padding: 30px;
-            max-width: 1100px;
-            margin: auto;
-        }
-
-        .game {
-            background: #1f2570;
-            border-radius: 12px;
-            cursor: pointer;
-            padding: 10px;
-            transition: transform 0.2s;
-        }
-
-        .game:hover {
-            transform: scale(1.05);
-        }
-
-        .game img {
-            width: 140px;
-            height: 140px;
-            object-fit: contain; /* auto‑resize ALL icons */
-            background: black;
-            border-radius: 10px;
-        }
-
-        .title {
-            margin-top: 8px;
-            font-weight: bold;
-        }
-
-        footer {
-            margin: 20px;
-            opacity: 0.7;
-            font-size: 0.9rem;
-        }
-    </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 
-<header>🎮 Game Launcher</header>
-
-<div class="grid" id="gameGrid"></div>
-
-<footer>Click a game icon to launch</footer>
-
-<script>
-fetch('games.json')
-    .then(response => response.json())
-    .then(games => {
-        const grid = document.getElementById('gameGrid');
-
-        games.forEach(game => {
-            const div = document.createElement('div');
-            div.className = 'game';
-            div.onclick = () => location.href = game.path;
-
-            div.innerHTML = `
-                <img src="thumbclass="title">${game.name}</div>
-            `;
-
-            grid.appendChild(div);
-        });
-    });
-</script>
+  <!-- Load your JavaScript -->
+  index.js
+  <!-- If your file has a different name, change index.js -->
 
 </body>
 </html>
