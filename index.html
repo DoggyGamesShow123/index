@@ -1,99 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Launcher</title>
+    <meta charset="UTF-8">
+    <title>Game Launcher</title>
 
-  <!-- Site favicon -->
-  <link rel="icon" type="image/x-icon"
-        href="https://github.com/DoggyGamesShow123/index/blob/main/icons/Saturn.ico">
+    <!-- REQUIRED TAB ICON -->
+    <link rel="icon" href="https://raw.githubusercontent.com/DoggyGamesShow123/index/refs/heads/main/icons/Saturn.ico">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      margin: 0;
-      padding: 20px;
-      background: #111;
-      color: white;
-      font-family: Arial, Helvetica, sans-serif;
-    }
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0e1027;
+            color: white;
+            text-align: center;
+        }
 
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
+        header {
+            padding: 20px;
+            background: #171b43;
+            font-size: 2rem;
+        }
 
-    /* Grid layout */
-    .launcher {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 20px;
-      max-width: 800px;
-      margin: auto;
-    }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            max-width: 1100px;
+            margin: auto;
+        }
 
-    /* Button */
-    .app {
-      text-align: center;
-      text-decoration: none;
-      color: white;
-    }
+        .game {
+            background: #1f2570;
+            border-radius: 12px;
+            cursor: pointer;
+            padding: 10px;
+            transition: transform 0.2s;
+        }
 
-    .icon-box {
-      width: 96px;
-      height: 96px;
-      margin: auto;
-      background: #222;
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.15s ease, background 0.15s ease;
-    }
+        .game:hover {
+            transform: scale(1.05);
+        }
 
-    .icon-box:hover {
-      transform: scale(1.08);
-      background: #333;
-    }
+        .game img {
+            width: 140px;
+            height: 140px;
+            object-fit: contain; /* auto‑resize ALL icons */
+            background: black;
+            border-radius: 10px;
+        }
 
-    .icon-box img {
-      max-width: 64px;
-      max-height: 64px;
-      image-rendering: auto;
-    }
+        .title {
+            margin-top: 8px;
+            font-weight: bold;
+        }
 
-    .label {
-      margin-top: 8px;
-      font-size: 14px;
-      word-wrap: break-word;
-    }
-  </style>
+        footer {
+            margin: 20px;
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 <body>
 
-  <h1>Launcher</h1>
+<header>🎮 Game Launcher</header>
 
-  <div class="launcher">
+<div class="grid" id="gameGrid"></div>
 
-    <!-- App button -->
-    <a class="app" href="srb2.html">
-      <div class="icon-box">
-        <img src="icons/SRB2KART.ico" alt="SRB2">
-      </div>
-      <div class="label">SRB2</div>
-    </a>
+<footer>Click a game icon to launch</footer>
 
-    <!-- Another app -->
-    <a class="app" href="saturn.html">
-      <div class="icon-box">
-        <img src="icons/saturn.ico" alt="Saturn">
-      </div>
-      <div class="label">Sega Saturn</div>
-    </a>
+<script>
+fetch('games.json')
+    .then(response => response.json())
+    .then(games => {
+        const grid = document.getElementById('gameGrid');
 
-  </div>
+        games.forEach(game => {
+            const div = document.createElement('div');
+            div.className = 'game';
+            div.onclick = () => location.href = game.path;
+
+            div.innerHTML = `
+                <img src="thumbclass="title">${game.name}</div>
+            `;
+
+            grid.appendChild(div);
+        });
+    });
+</script>
 
 </body>
 </html>
-``
