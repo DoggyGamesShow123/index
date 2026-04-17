@@ -2,18 +2,96 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>SSv1</title>
+  <title>Launcher</title>
 
-  <!-- Favicon -->
+  <!-- Site favicon -->
   https://raw.githubusercontent.com/DoggyGamesShow123/SSv1/refs/heads/main/favicon.ico
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #111;
+      color: white;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    /* Grid layout */
+    .launcher {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    /* Button */
+    .app {
+      text-align: center;
+      text-decoration: none;
+      color: white;
+    }
+
+    .icon-box {
+      width: 96px;
+      height: 96px;
+      margin: auto;
+      background: #222;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .icon-box:hover {
+      transform: scale(1.08);
+      background: #333;
+    }
+
+    .icon-box img {
+      max-width: 64px;
+      max-height: 64px;
+      image-rendering: auto;
+    }
+
+    .label {
+      margin-top: 8px;
+      font-size: 14px;
+      word-wrap: break-word;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Load your JavaScript -->
-  index.js
-  <!-- If your file has a different name, change index.js -->
+  <h1>Launcher</h1>
+
+  <div class="launcher">
+
+    <!-- App button -->
+    srb2.html
+      <div class="icon-box">
+        icons/srb2.ico
+      </div>
+      <div class="label">SRB2</div>
+    </a>
+
+    <!-- Another app -->
+    saturn.html
+      <div class="icon-box">
+        icons/saturn.ico
+      </div>
+      <div class="label">Sega Saturn</div>
+    </a>
+
+  </div>
 
 </body>
 </html>
