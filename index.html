@@ -5,7 +5,7 @@
 <title>Launcher</title>
 
 <!-- Favicon -->
-<link rel="icon" href="favicon.ico">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -71,6 +71,7 @@ html, body {
   inset: 0;
   background: black;
   display: none;
+  z-index: 10;
 }
 
 #player iframe {
@@ -79,7 +80,6 @@ html, body {
   border: none;
 }
 
-/* Zoom animation */
 .zoom-in {
   animation: zoomIn 0.45s ease forwards;
 }
@@ -89,13 +89,13 @@ html, body {
 }
 
 @keyframes zoomIn {
-  from { transform: scale(0.8); opacity: 0; }
+  from { transform: scale(0.85); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
 
 @keyframes zoomOut {
   from { transform: scale(1); opacity: 1; }
-  to { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(0.85); opacity: 0; }
 }
 </style>
 </head>
@@ -103,10 +103,10 @@ html, body {
 
 <div id="launcher">
 
-  <!-- GAME BUTTON -->
+  <!-- GAME ICON -->
   <div class="game" onclick="launchGame('srb2.html')">
     <div class="icon">
-      <img src="icons/srb2.ico">
+      <img src="icons/srb2.ico" alt="SRB2">
     </div>
     <div class="label">SRB2</div>
   </div>
@@ -115,19 +115,30 @@ html, body {
 
 <div id="player"></div>
 
-<!-- Sounds -->
-<audio id="openSound" src="sounds/open.wav"></audio>
-<audio id="closeSound" src="sounds/close.wav"></audio>
-
 <script>
 let player = document.getElementById("player");
 let launcher = document.getElementById("launcher");
 let currentIframe = null;
+let audio = null;
+
+/* SMART AUDIO: create → play → destroy */
+function playSound(file) {
+  if (audio) {
+    audio.pause();
+    audio = null;
+  }
+  audio = new Audio(file);
+  audio.volume = 0.6;
+  audio.play();
+  audio.onended = () => {
+    audio = null; // free memory
+  };
+}
 
 function launchGame(url) {
-  document.getElementById("openSound").play();
+  playSound("sounds/open.mp3");
 
-  // Unload launcher images to save memory
+  // unload launcher images to save memory
   document.querySelectorAll("#launcher img").forEach(img => img.remove());
 
   launcher.style.opacity = "0";
@@ -144,7 +155,7 @@ function launchGame(url) {
 function closeGame() {
   if (!currentIframe) return;
 
-  document.getElementById("closeSound").play();
+  playSound("sounds/close.mp3");
 
   player.className = "zoom-out";
 
@@ -153,17 +164,18 @@ function closeGame() {
     player.style.display = "none";
     launcher.style.opacity = "1";
 
-    // Reload launcher images (memory-safe)
+    // reload launcher cleanly (restores icons + frees iframe memory)
     location.reload();
   }, 450);
 }
 
-// ALT + LEFT or RIGHT to close
+/* ALT + LEFT or RIGHT closes game */
 document.addEventListener("keydown", e => {
   if (e.altKey && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
     closeGame();
   }
 });
 </script>
+
 </body>
 </html>
