@@ -1,181 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Launcher</title>
+  <meta charset="UTF-8">
+  <title>Launcher</title>
 
-<!-- Favicon -->
-<link rel="icon" type="image/x-icon" href="favicon.ico">
+  <!-- Site / PWA icon -->
+  favicon.ico
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- PWA Manifest -->
+  manifest.json
 
-<!-- PWA -->
-<link rel="manifest" href="manifest.json">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-:root {
-  --bg: #0e0e0e;
-  --card: #1b1b1b;
-}
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --card: #1d1d1d;
+    }
 
-html, body {
-  margin: 0;
-  height: 100%;
-  background: var(--bg);
-  color: white;
-  font-family: Arial, sans-serif;
-  overflow: hidden;
-}
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      color: white;
+      font-family: Arial, Helvetica, sans-serif;
+      overflow: hidden;
+    }
 
-#launcher {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 24px;
-  padding: 32px;
-  transition: opacity 0.4s ease;
-}
+    h1 {
+      text-align: center;
+      margin: 20px 0;
+    }
 
-.game {
-  text-align: center;
-  cursor: pointer;
-}
+    /* Launcher grid */
+    #launcher {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 24px;
+      padding: 32px;
+      transition: opacity 0.4s ease;
+    }
 
-.icon {
-  width: 96px;
-  height: 96px;
-  margin: auto;
-  border-radius: 18px;
-  background: var(--card);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.4s ease;
-}
+    .game {
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+    }
 
-.icon img {
-  max-width: 64px;
-  max-height: 64px;
-}
+    .icon {
+      width: 96px;
+      height: 96px;
+      margin: auto;
+      border-radius: 18px;
+      background: var(--card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.35s ease, background 0.35s ease;
+    }
 
-.game:hover .icon {
-  transform: scale(1.1);
-}
+    .icon img {
+      max-width: 64px;
+      max-height: 64px;
+    }
 
-.label {
-  margin-top: 8px;
-  font-size: 14px;
-}
+    .game:hover .icon {
+      transform: scale(1.1);
+      background: #2a2a2a;
+    }
 
-#player {
-  position: fixed;
-  inset: 0;
-  background: black;
-  display: none;
-  z-index: 10;
-}
+    .label {
+      margin-top: 8px;
+      font-size: 14px;
+    }
 
-#player iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
+    /* Player overlay */
+    #player {
+      position: fixed;
+      inset: 0;
+      background: black;
+      display: none;
+      z-index: 10;
+    }
 
-.zoom-in {
-  animation: zoomIn 0.45s ease forwards;
-}
+    #player iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
 
-.zoom-out {
-  animation: zoomOut 0.45s ease forwards;
-}
+    /* Animations */
+    .zoom-in {
+      animation: zoomIn 0.45s ease forwards;
+    }
 
-@keyframes zoomIn {
-  from { transform: scale(0.85); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
+    .zoom-out {
+      animation: zoomOut 0.45s ease forwards;
+    }
 
-@keyframes zoomOut {
-  from { transform: scale(1); opacity: 1; }
-  to { transform: scale(0.85); opacity: 0; }
-}
-</style>
+    @keyframes zoomIn {
+      from { transform: scale(0.85); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes zoomOut {
+      from { transform: scale(1); opacity: 1; }
+      to   { transform: scale(0.85); opacity: 0; }
+    }
+  </style>
 </head>
 <body>
 
-<div id="launcher">
+  <h1>Launcher</h1>
 
-  <!-- GAME ICON -->
-  <div class="game" onclick="launchGame('srb2.html')">
-    <div class="icon">
-      <img src="icons/srb2.ico" alt="SRB2">
+  <div id="launcher">
+
+    <!-- Sonic 4 Episode I (test game) -->
+    <div class="game" onclick="launchGame('games/sonic4ep1/index.html')">
+      <div class="icon">
+        games/sonic4ep1/thumb/thumb.ico
+      </div>
+      <div class="label">Sonic 4 EP1</div>
     </div>
-    <div class="label">SRB2</div>
+
   </div>
 
-</div>
+  <!-- Fullscreen game container -->
+  <div id="player"></div>
 
-<div id="player"></div>
+  <script>
+    const launcher = document.getElementById("launcher");
+    const player = document.getElementById("player");
+    let currentIframe = null;
+    let audio = null;
 
-<script>
-let player = document.getElementById("player");
-let launcher = document.getElementById("launcher");
-let currentIframe = null;
-let audio = null;
+    /* SMART AUDIO: create → play → destroy */
+    function playSound(file) {
+      if (audio) {
+        audio.pause();
+        audio = null;
+      }
+      audio = new Audio(file);
+      audio.volume = 0.6;
+      audio.play();
+      audio.onended = () => audio = null;
+    }
 
-/* SMART AUDIO: create → play → destroy */
-function playSound(file) {
-  if (audio) {
-    audio.pause();
-    audio = null;
-  }
-  audio = new Audio(file);
-  audio.volume = 0.6;
-  audio.play();
-  audio.onended = () => {
-    audio = null; // free memory
-  };
-}
+    function launchGame(url) {
+      playSound("sounds/open.mp3");
 
-function launchGame(url) {
-  playSound("sounds/open.mp3");
+      // unload launcher images (memory saving)
+      document.querySelectorAll("#launcher img").forEach(img => img.remove());
 
-  // unload launcher images to save memory
-  document.querySelectorAll("#launcher img").forEach(img => img.remove());
+      launcher.style.opacity = "0";
 
-  launcher.style.opacity = "0";
+      player.style.display = "block";
+      player.className = "zoom-in";
 
-  player.style.display = "block";
-  player.className = "zoom-in";
+      currentIframe = document.createElement("iframe");
+      currentIframe.src = url;
+      currentIframe.allow = "fullscreen; gamepad; autoplay";
+      player.appendChild(currentIframe);
+    }
 
-  currentIframe = document.createElement("iframe");
-  currentIframe.src = url;
-  currentIframe.allow = "fullscreen; gamepad; autoplay";
-  player.appendChild(currentIframe);
-}
+    function closeGame() {
+      if (!currentIframe) return;
 
-function closeGame() {
-  if (!currentIframe) return;
+      playSound("sounds/close.mp3");
 
-  playSound("sounds/close.mp3");
+      player.className = "zoom-out";
 
-  player.className = "zoom-out";
+      setTimeout(() => {
+        player.innerHTML = "";
+        player.style.display = "none";
+        launcher.style.opacity = "1";
 
-  setTimeout(() => {
-    player.innerHTML = "";
-    player.style.display = "none";
-    launcher.style.opacity = "1";
+        // reload launcher to restore icons cleanly
+        location.reload();
+      }, 450);
+    }
 
-    // reload launcher cleanly (restores icons + frees iframe memory)
-    location.reload();
-  }, 450);
-}
-
-/* ALT + LEFT or RIGHT closes game */
-document.addEventListener("keydown", e => {
-  if (e.altKey && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
-    closeGame();
-  }
-});
-</script>
+    /* ALT + LEFT or RIGHT closes game */
+    document.addEventListener("keydown", e => {
+      if (e.altKey && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+        closeGame();
+      }
+    });
+  </script>
 
 </body>
 </html>
