@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <title>Launcher</title>
 
-  <!-- Site / PWA icon -->
-  favicon.ico
+  <!-- ✅ Proper favicon -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
 
-  <!-- PWA Manifest -->
-  manifest.json
+  <!-- ✅ Proper PWA manifest -->
+  <link rel="manifest" href="manifest.json">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -34,7 +34,6 @@
       margin: 20px 0;
     }
 
-    /* Launcher grid */
     #launcher {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -58,12 +57,14 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
       transition: transform 0.35s ease, background 0.35s ease;
     }
 
     .icon img {
-      max-width: 64px;
-      max-height: 64px;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     .game:hover .icon {
@@ -76,7 +77,6 @@
       font-size: 14px;
     }
 
-    /* Player overlay */
     #player {
       position: fixed;
       inset: 0;
@@ -91,7 +91,6 @@
       border: none;
     }
 
-    /* Animations */
     .zoom-in {
       animation: zoomIn 0.45s ease forwards;
     }
@@ -117,17 +116,19 @@
 
   <div id="launcher">
 
-    <!-- Sonic 4 Episode I (test game) -->
+    <!-- ✅ TEST GAME: Sonic 4 EP1 -->
     <div class="game" onclick="launchGame('games/sonic4ep1/index.html')">
       <div class="icon">
-        thumb/Sonic4ep1.png
+        <img
+          src="https://raw.githubusercontent.com/DoggyGamesShow123/index/refs/heads/main/thumb/Sonic4ep1.png"
+          alt="Sonic 4 Episode I"
+        >
       </div>
       <div class="label">Sonic 4 EP1</div>
     </div>
 
   </div>
 
-  <!-- Fullscreen game container -->
   <div id="player"></div>
 
   <script>
@@ -136,7 +137,6 @@
     let currentIframe = null;
     let audio = null;
 
-    /* SMART AUDIO: create → play → destroy */
     function playSound(file) {
       if (audio) {
         audio.pause();
@@ -151,7 +151,7 @@
     function launchGame(url) {
       playSound("sounds/open.mp3");
 
-      // unload launcher images (memory saving)
+      // unload launcher images for memory saving
       document.querySelectorAll("#launcher img").forEach(img => img.remove());
 
       launcher.style.opacity = "0";
@@ -169,20 +169,16 @@
       if (!currentIframe) return;
 
       playSound("sounds/close.mp3");
-
       player.className = "zoom-out";
 
       setTimeout(() => {
         player.innerHTML = "";
         player.style.display = "none";
         launcher.style.opacity = "1";
-
-        // reload launcher to restore icons cleanly
         location.reload();
       }, 450);
     }
 
-    /* ALT + LEFT or RIGHT closes game */
     document.addEventListener("keydown", e => {
       if (e.altKey && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
         closeGame();
