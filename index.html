@@ -1,97 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Launcher</title>
+<meta charset="UTF-8">
+<title>Launcher</title>
 
-  <!-- Site favicon -->
-  https://raw.githubusercontent.com/DoggyGamesShow123/SSv1/refs/heads/main/favicon.ico
+<!-- Favicon -->
+<link rel="icon" href="favicon.ico">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      margin: 0;
-      padding: 20px;
-      background: #111;
-      color: white;
-      font-family: Arial, Helvetica, sans-serif;
-    }
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
 
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
+<style>
+:root {
+  --bg: #0e0e0e;
+  --card: #1b1b1b;
+}
 
-    /* Grid layout */
-    .launcher {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 20px;
-      max-width: 800px;
-      margin: auto;
-    }
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: white;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
 
-    /* Button */
-    .app {
-      text-align: center;
-      text-decoration: none;
-      color: white;
-    }
+#launcher {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 24px;
+  padding: 32px;
+  transition: opacity 0.4s ease;
+}
 
-    .icon-box {
-      width: 96px;
-      height: 96px;
-      margin: auto;
-      background: #222;
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.15s ease, background 0.15s ease;
-    }
+.game {
+  text-align: center;
+  cursor: pointer;
+}
 
-    .icon-box:hover {
-      transform: scale(1.08);
-      background: #333;
-    }
+.icon {
+  width: 96px;
+  height: 96px;
+  margin: auto;
+  border-radius: 18px;
+  background: var(--card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.4s ease;
+}
 
-    .icon-box img {
-      max-width: 64px;
-      max-height: 64px;
-      image-rendering: auto;
-    }
+.icon img {
+  max-width: 64px;
+  max-height: 64px;
+}
 
-    .label {
-      margin-top: 8px;
-      font-size: 14px;
-      word-wrap: break-word;
-    }
-  </style>
+.game:hover .icon {
+  transform: scale(1.1);
+}
+
+.label {
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+#player {
+  position: fixed;
+  inset: 0;
+  background: black;
+  display: none;
+}
+
+#player iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Zoom animation */
+.zoom-in {
+  animation: zoomIn 0.45s ease forwards;
+}
+
+.zoom-out {
+  animation: zoomOut 0.45s ease forwards;
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes zoomOut {
+  from { transform: scale(1); opacity: 1; }
+  to { transform: scale(0.8); opacity: 0; }
+}
+</style>
 </head>
 <body>
 
-  <h1>Launcher</h1>
+<div id="launcher">
 
-  <div class="launcher">
-
-    <!-- App button -->
-    srb2.html
-      <div class="icon-box">
-        icons/srb2.ico
-      </div>
-      <div class="label">SRB2</div>
-    </a>
-
-    <!-- Another app -->
-    saturn.html
-      <div class="icon-box">
-        icons/saturn.ico
-      </div>
-      <div class="label">Sega Saturn</div>
-    </a>
-
+  <!-- GAME BUTTON -->
+  <div class="game" onclick="launchGame('srb2.html')">
+    <div class="icon">
+      <img src="icons/srb2.ico">
+    </div>
+    <div class="label">SRB2</div>
   </div>
 
+</div>
+
+<div id="player"></div>
+
+<!-- Sounds -->
+<audio id="openSound" src="sounds/open.wav"></audio>
+<audio id="closeSound" src="sounds/close.wav"></audio>
+
+<script>
+let player = document.getElementById("player");
+let launcher = document.getElementById("launcher");
+let currentIframe = null;
+
+function launchGame(url) {
+  document.getElementById("openSound").play();
+
+  // Unload launcher images to save memory
+  document.querySelectorAll("#launcher img").forEach(img => img.remove());
+
+  launcher.style.opacity = "0";
+
+  player.style.display = "block";
+  player.className = "zoom-in";
+
+  currentIframe = document.createElement("iframe");
+  currentIframe.src = url;
+  currentIframe.allow = "fullscreen; gamepad; autoplay";
+  player.appendChild(currentIframe);
+}
+
+function closeGame() {
+  if (!currentIframe) return;
+
+  document.getElementById("closeSound").play();
+
+  player.className = "zoom-out";
+
+  setTimeout(() => {
+    player.innerHTML = "";
+    player.style.display = "none";
+    launcher.style.opacity = "1";
+
+    // Reload launcher images (memory-safe)
+    location.reload();
+  }, 450);
+}
+
+// ALT + LEFT or RIGHT to close
+document.addEventListener("keydown", e => {
+  if (e.altKey && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+    closeGame();
+  }
+});
+</script>
 </body>
 </html>
