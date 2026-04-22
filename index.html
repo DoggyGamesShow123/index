@@ -4,10 +4,7 @@
   <meta charset="UTF-8">
   <title>Launcher</title>
 
-  <!-- ✅ Proper favicon -->
   <link rel="icon" type="image/x-icon" href="favicon.ico">
-
-  <!-- ✅ Proper PWA manifest -->
   <link rel="manifest" href="manifest.json">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,6 +36,7 @@
       grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
       gap: 24px;
       padding: 32px;
+      transition: opacity 0.4s ease;
     }
 
     .game {
@@ -75,58 +73,110 @@
       margin-top: 8px;
       font-size: 14px;
     }
+
+    /* Embedded player (used only when openBlank = 0) */
+    #player {
+      position: fixed;
+      inset: 0;
+      background: black;
+      display: none;
+      z-index: 10;
+    }
+
+    #player iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .zoom-in {
+      animation: zoomIn 0.45s ease forwards;
+    }
+
+    .zoom-out {
+      animation: zoomOut 0.45s ease forwards;
+    }
+
+    @keyframes zoomIn {
+      from { transform: scale(0.85); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes zoomOut {
+      from { transform: scale(1); opacity: 1; }
+      to   { transform: scale(0.85); opacity: 0; }
+    }
   </style>
 </head>
 <body>
 
-  <h1>Launcher</h1>
+<h1>Launcher</h1>
 
-  <div id="launcher">
+<div id="launcher">
 
-    <!-- ✅ GAME: Sonic 4 EP1 -->
-    <div class="game" onclick="launchGame('games/sonic4ep1/index.html')">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/refs/heads/main/thumb/Sonic4ep1.png" alt="Sonic 4 EP1">
-      </div>
-      <div class="label">Sonic 4 EP1</div>
+  <!-- Sonic 4 EP1 → about:blank -->
+  <div class="game"
+       data-url="games/sonic4ep1/index.html"
+       data-openblank="1"
+       onclick="launchGame(this)">
+    <div class="icon">
+      <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/refs/heads/main/thumb/Sonic4ep1.png">
     </div>
-
-    <!-- ✅ GAME: Sonic CD -->
-    <div class="game" onclick="launchGame('games/sonic%20CD/index.html')">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/refs/heads/main/thumb/SonicCD.png" alt="Sonic CD">
-      </div>
-      <div class="label">Sonic CD (no save)</div>
-    </div>
-
-    <!-- ✅ GAME: SRB2 Kart -->
-    <div class="game" onclick="launchGame('games/SRB2KART/index.html')">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/refs/heads/main/icons/SRB2KART.ico" alt="SRB2 Kart">
-      </div>
-      <div class="label">SRB2 Kart</div>
-    </div>
-
+    <div class="label">Sonic 4 EP1</div>
   </div>
 
-  <script>
-    let audio = null;
+  <!-- Sonic CD → embedded -->
+  <div class="game"
+       data-url="games/sonic%20CD/index.html"
+       data-openblank="0"
+       onclick="launchGame(this)">
+    <div class="icon">
+      <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/refs/heads/main/thumb/SonicCD.png">
+    </div>
+    <div class="label">Sonic CD (no save)</div>
+  </div>
 
-    function playSound(file) {
-      if (audio) {
-        audio.pause();
-        audio = null;
-      }
-      audio = new Audio(file);
-      audio.volume = 0.6;
-      audio.play();
-      audio.onended = () => audio = null;
+  <!-- SRB2 Kart → embedded -->
+  <div class="game"
+       data-url="games/SRB2KART/index.html"
+       data-openblank="1"
+       onclick="launchGame(this)">
+    <div class="icon">
+      <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/refs/heads/main/icons/SRB2KART.ico">
+    </div>
+    <div class="label">SRB2 Kart</div>
+  </div>
+
+</div>
+
+<div id="player"></div>
+
+<script>
+  const launcher = document.getElementById("launcher");
+  const player = document.getElementById("player");
+
+  let currentIframe = null;
+  let audio = null;
+
+  function playSound(file) {
+    if (audio) {
+      audio.pause();
+      audio = null;
     }
+    audio = new Audio(file);
+    audio.volume = 0.6;
+    audio.play();
+    audio.onended = () => audio = null;
+  }
 
-    /* ✅ about:blank launcher with NO size limits */
-    function launchGame(url) {
-      playSound("sounds/open.mp3");
+  function launchGame(el) {
+    const url = el.dataset.url;
+    const openBlank = el.dataset.openblank === "1";
 
+    playSound("sounds/open.mp3");
+
+    /* ✅ about:blank path */
+    if (openBlank) {
       const win = window.open("about:blank", "_blank");
       if (!win) return;
 
@@ -140,3 +190,50 @@
             <title>Game</title>
           </head>
           <body>
+            <script>
+              location.replace("${url}");
+            <\/script>
+          </body>
+        </html>
+      `);
+      win.document.close();
+      return;
+    }
+
+    /* ✅ embedded path (original behavior) */
+    document.querySelectorAll("#launcher img").forEach(img => img.remove());
+    launcher.style.opacity = "0";
+
+    player.style.display = "block";
+    player.className = "zoom-in";
+
+    currentIframe = document.createElement("iframe");
+    currentIframe.src = url;
+    currentIframe.allow = "fullscreen; gamepad; autoplay";
+    player.appendChild(currentIframe);
+  }
+
+  function closeGame() {
+    if (!currentIframe) return;
+
+    playSound("sounds/close.mp3");
+    player.className = "zoom-out";
+
+    setTimeout(() => {
+      player.innerHTML = "";
+      player.style.display = "none";
+      launcher.style.opacity = "1";
+      location.reload();
+    }, 450);
+  }
+
+  document.addEventListener("keydown", e => {
+    if (e.altKey && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+      closeGame();
+    }
+  });
+</script>
+
+</body>
+</html>
+``
