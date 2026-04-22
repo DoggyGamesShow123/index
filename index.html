@@ -4,11 +4,7 @@
   <meta charset="UTF-8">
   <title>Launcher</title>
 
-  <!-- ✅ Launcher icon (Option B: local, reliable) -->
   <link rel="icon" type="image/x-icon" href="icons/launcher/favicon.ico">
-  <link rel="shortcut icon" type="image/x-icon" href="icons/launcher/favicon.ico">
-
-  <!-- ✅ PWA manifest -->
   <link rel="manifest" href="manifest.json">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,11 +33,7 @@
       transition: opacity 0.4s ease;
     }
 
-    .game {
-      text-align: center;
-      cursor: pointer;
-      user-select: none;
-    }
+    .game { text-align: center; cursor: pointer; user-select: none; }
 
     .icon {
       width: 96px;
@@ -105,7 +97,7 @@
 
   <div id="launcher">
 
-    <!-- ✅ GAME: Sonic 4 EP1 -->
+    <!-- GAME: Sonic 4 EP1 (open in about:blank tab) -->
     <div class="game"
          data-url="games/sonic4ep1/index.html"
          data-openblank="1"
@@ -118,10 +110,10 @@
       <div class="label">Sonic 4 EP1</div>
     </div>
 
-    <!-- ✅ GAME: Sonic CD -->
+    <!-- GAME: Sonic CD (embedded) -->
     <div class="game"
          data-url="games/sonic%20CD/index.html"
-         data-openblank="1"
+         data-openblank="0"
          onclick="launchGame(this)">
       <div class="icon">
         <img
@@ -131,10 +123,10 @@
       <div class="label">Sonic Cd (no save)</div>
     </div>
 
-    <!-- ✅ GAME: SRB2 Kart -->
+    <!-- GAME: SRB2 Kart (embedded) -->
     <div class="game"
          data-url="games/SRB2KART/index.html"
-         data-openblank="1"
+         data-openblank="0"
          onclick="launchGame(this)">
       <div class="icon">
         <img
@@ -155,16 +147,33 @@
     var audio = null;
 
     function playSound(file) {
-      if (audio) { try { audio.pause(); } catch (e) {} audio = null; }
-      audio = new Audio(file);
-      audio.volume = 0.6;
-      audio.play().catch(function(){});
-      audio.onended = function () { audio = null; };
+      try {
+        if (audio) { audio.pause(); audio = null; }
+        audio = new Audio(file);
+        audio.volume = 0.6;
+        audio.play().catch(function(){});
+        audio.onended = function(){ audio = null; };
+      } catch (e) {}
     }
 
-    function openAboutBlank(url) {
+    function absoluteUrl(url) {
+      try { return new URL(url, window.location.href).href; }
+      catch (e) { return url; }
+    }
+
+    // ✅ about:blank tab that STAYS about:blank (game is embedded fullscreen)
+    function openAboutBlankEmbedded(url) {
       var win = window.open("about:blank", "_blank");
-      if (!win) return;
+      if (!win) {
+        // popup blocked fallback: just open normally
+        window.open(url, "_blank");
+        return;
+      }
+
+      var abs = absoluteUrl(url);
+
+      // Open window FIRST (popup-safe), THEN sound
+      playSound("sounds/open.mp3");
 
       win.document.open();
       win.document.write(
@@ -173,26 +182,28 @@
         '<meta charset="utf-8">' +
         '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
         '<title>Game</title>' +
+        '<link rel="icon" type="image/x-icon" href="' + absoluteUrl("icons/launcher/favicon.ico") + '">' +
         '</head><body>' +
-        '<script>location.replace("' + url.replace(/"/g, '\\"') + '");<\/script>' +
+        '<iframe id="g" src="' + abs.replace(/"/g, '&quot;') + '" allow="fullscreen; gamepad; autoplay" allowfullscreen></iframe>' +
+        '<script>' +
+          // No external CSS file, but we must size the iframe.
+          // This makes it truly full window, no limits.
+          'var f=document.getElementById("g");' +
+          'document.documentElement.style.margin="0";' +
+          'document.body.style.margin="0";' +
+          'document.body.style.overflow="hidden";' +
+          'f.style.position="fixed";f.style.left="0";f.style.top="0";' +
+          'f.style.width="100vw";f.style.height="100vh";f.style.border="0";' +
+        '<\/script>' +
         '</body></html>'
       );
       win.document.close();
     }
 
-    function launchGame(el) {
-      var url = el.getAttribute("data-url");
-      var openBlank = el.getAttribute("data-openblank") === "1";
-
+    function launchEmbedded(url) {
       playSound("sounds/open.mp3");
 
-      // Mode 1: about:blank new tab (no embed / no size limits)
-      if (openBlank) {
-        openAboutBlank(url);
-        return;
-      }
-
-      // Mode 0: embedded iframe (original behavior)
+      // memory saving: remove launcher images behind the embed
       var imgs = document.querySelectorAll("#launcher img");
       for (var i = 0; i < imgs.length; i++) imgs[i].remove();
 
@@ -206,6 +217,19 @@
       currentIframe.setAttribute("allow", "fullscreen; gamepad; autoplay");
       currentIframe.setAttribute("allowfullscreen", "");
       player.appendChild(currentIframe);
+    }
+
+    function launchGame(el) {
+      var url = el.getAttribute("data-url");
+      var openBlank = el.getAttribute("data-openblank") === "1";
+
+      if (openBlank) {
+        // about:blank embed mode
+        openAboutBlankEmbedded(url);
+      } else {
+        // original embedded mode
+        launchEmbedded(url);
+      }
     }
 
     function closeGame() {
@@ -222,6 +246,7 @@
       }, 450);
     }
 
+    // ALT + LEFT or RIGHT closes embedded game only
     document.addEventListener("keydown", function (e) {
       if (e.altKey && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
         closeGame();
