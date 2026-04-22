@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>32X Web Player (EmulatorJS • PicoDrive)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root { color-scheme: dark; }
+    html, body { height: 100%; margin: 0; background: #000; color: #eee; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    #wrap { position: fixed; inset: 0; display: grid; place-items: center; padding: 0; }
+    #game { width: min(96vw, 960px); height: calc(min(96vw, 960px) * 0.75); max-width: 100%; background: #111; border-radius: 12px; overflow: hidden; }
+    #overlay { position: fixed; inset: 0; display: grid; place-items: center; text-align: center;
+      background: radial-gradient(ellipse at center, rgba(0,0,0,.85), rgba(0,0,0,.95)); }
+    #start { font-size: clamp(16px, 2.2vw, 22px); padding: .8em 1.4em; border-radius: 10px; border: 0; background:#28a; color:#fff; cursor: pointer; }
+    #hint { opacity:.78; font-size: .9rem; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <div id="wrap">
+    <div id="game"></div>
+  </div>
+  <div id="overlay">
+    <div>
+      <h1 style="margin:0 0 12px">Sega 32X – EmulatorJS</h1>
+      <button id="start">Click to Start</button>
+      <div id="hint">Arrows = D‑Pad • Z/X/A/S = Buttons • Enter = Start • Plug in a gamepad</div>
+      <div id="hint">Tip: You can override with <code>?rom=URL_TO_ROM</code></div>
+    </div>
+  </div>
+
+  <script>
+    // ROM URL handling (user override > default)
+    const params = new URLSearchParams(location.search);
+    const userRom = params.get('rom');
+    // CORS-friendly CDN URL for your file:
+    const DEFAULT_ROM = "https://cdn.jsdelivr.net/gh/DoggyGamesShow123/wideson@main/Knuckles32X_EN.zip"; // change if you want
+
+    // Prefer plain .32x/.bin if your zip still fails; EmuJS/PicoDrive supports those.
+    // Example: const DEFAULT_ROM = "https://your.host/Knuckles32X_EN.32x";
+
+    const ROM_URL = userRom || DEFAULT_ROM;
+
+    // Start after a user gesture (for audio policies)
+    const startBtn = document.getElementById('start');
+    const overlay  = document.getElementById('overlay');
+
+    startBtn.addEventListener('click', async () => {
+      startBtn.disabled = true;
+      startBtn.textContent = 'Loading emulator & ROM…';
+
+      try {
+        // Minimal preflight to catch obvious CORS/404 before loader runs
+        const headOK = await fetch(ROM_URL, { method: 'HEAD', mode: 'cors' }).then(r => r.ok).catch(() => false);
+        if (!headOK) throw new Error('ROM fetch blocked (CORS) or not found');
+
+        // EmulatorJS configuration (per docs)
+        // Docs show:
+        //   EJS_player, EJS_core='sega32x', EJS_gameUrl, EJS_pathtodata, and load loader.js
+        // CDN for data/ (no self-hosting required):
+        window.EJS_player        = '#game';
+        window.EJS_core          = 'sega32x';           // uses PicoDrive core for 32X
+        window.EJS_gameUrl       = ROM_URL;             // your ROM URL
+        window.EJS_pathtodata    = 'https://cdn.emulatorjs.org/latest/data/'; // CDN path to WASM/JS
+        window.EJS_startOnLoaded = true;                // auto run when ready
+
+        // Optional niceties:
+        window.EJS_backgroundColor = '#000000';
+        window.EJS_color           = '#28a';
+
+        // Load EmulatorJS loader from the same CDN family
+        const s = document.createElement('script');
+        s.src = 'https://cdn.emulatorjs.org/latest/data/loader.js';
+        s.onload = () => { overlay.style.display = 'none'; };
+        s.onerror = () => {
+          startBtn.disabled = false;
+          startBtn.textContent = 'Start';
+          alert('Failed to load EmulatorJS loader. Try again or check network.');
+        };
+        document.body.appendChild(s);
+      } catch (err) {
+        console.error(err);
+        startBtn.disabled = false;
+        startBtn.textContent = 'Start';
+        alert('Failed to start: ' + (err?.message || err));
+      }
+    });
+
+    startBtn.focus();
+  </script>
+</body>
+</html>
