@@ -4,16 +4,16 @@
   <meta charset="UTF-8">
   <title>Launcher</title>
 
+  <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+  <!-- PWA manifest -->
   <link rel="manifest" href="manifest.json">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    :root {
-      --bg: #0f0f0f;
-      --card: #1d1d1d;
-    }
+    :root { --bg:#0f0f0f; --card:#1d1d1d; }
 
     html, body {
       margin: 0;
@@ -26,10 +26,7 @@
       overflow: hidden;
     }
 
-    h1 {
-      text-align: center;
-      margin: 20px 0;
-    }
+    h1 { text-align: center; margin: 20px 0; }
 
     #launcher {
       display: grid;
@@ -62,6 +59,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      display: block;
     }
 
     .game:hover .icon {
@@ -69,12 +67,9 @@
       background: #2a2a2a;
     }
 
-    .label {
-      margin-top: 8px;
-      font-size: 14px;
-    }
+    .label { margin-top: 8px; font-size: 14px; }
 
-    /* Embedded player (used only when openBlank = 0) */
+    /* Embedded player overlay (only used when data-openblank="0") */
     #player {
       position: fixed;
       inset: 0;
@@ -87,153 +82,155 @@
       width: 100%;
       height: 100%;
       border: none;
+      display: block;
     }
 
-    .zoom-in {
-      animation: zoomIn 0.45s ease forwards;
-    }
-
-    .zoom-out {
-      animation: zoomOut 0.45s ease forwards;
-    }
+    .zoom-in  { animation: zoomIn 0.45s ease forwards; }
+    .zoom-out { animation: zoomOut 0.45s ease forwards; }
 
     @keyframes zoomIn {
       from { transform: scale(0.85); opacity: 0; }
       to   { transform: scale(1); opacity: 1; }
     }
-
     @keyframes zoomOut {
       from { transform: scale(1); opacity: 1; }
       to   { transform: scale(0.85); opacity: 0; }
     }
   </style>
 </head>
+
 <body>
+  <h1>Launcher</h1>
 
-<h1>Launcher</h1>
+  <div id="launcher">
 
-<div id="launcher">
-
-  <!-- Sonic 4 EP1 → about:blank -->
-  <div class="game"
-       data-url="games/sonic4ep1/index.html"
-       data-openblank="1"
-       onclick="launchGame(this)">
-    <div class="icon">
-      <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/refs/heads/main/thumb/Sonic4ep1.png">
+    <!-- GAME: Sonic 4 EP1 -->
+    <div class="game"
+         data-url="games/sonic4ep1/index.html"
+         data-openblank="1"
+         onclick="launchGame(this)">
+      <div class="icon">
+        <img
+          src="https://raw.githubusercontent.com/DoggyGamesShow123/index/refs/heads/main/thumb/Sonic4ep1.png"
+          alt="Sonic 4 Episode I">
+      </div>
+      <div class="label">Sonic 4 EP1</div>
     </div>
-    <div class="label">Sonic 4 EP1</div>
+
+    <!-- GAME: Sonic CD -->
+    <div class="game"
+         data-url="games/sonic%20CD/index.html"
+         data-openblank="0"
+         onclick="launchGame(this)">
+      <div class="icon">
+        <img
+          src="https://raw.githubusercontent.com/DoggyGamesShow123/index/refs/heads/main/thumb/SonicCD.png"
+          alt="Sonic CD">
+      </div>
+      <div class="label">Sonic Cd (no save)</div>
+    </div>
+
+    <!-- GAME: SRB2 Kart -->
+    <div class="game"
+         data-url="games/SRB2KART/index.html"
+         data-openblank="0"
+         onclick="launchGame(this)">
+      <div class="icon">
+        <img
+          src="https://raw.githubusercontent.com/DoggyGamesShow123/index/refs/heads/main/icons/SRB2KART.ico"
+          alt="SRB2 Kart">
+      </div>
+      <div class="label">SRB2 Kart</div>
+    </div>
+
   </div>
 
-  <!-- Sonic CD → embedded -->
-  <div class="game"
-       data-url="games/sonic%20CD/index.html"
-       data-openblank="0"
-       onclick="launchGame(this)">
-    <div class="icon">
-      <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/refs/heads/main/thumb/SonicCD.png">
-    </div>
-    <div class="label">Sonic CD (no save)</div>
-  </div>
+  <div id="player"></div>
 
-  <!-- SRB2 Kart → embedded -->
-  <div class="game"
-       data-url="games/SRB2KART/index.html"
-       data-openblank="1"
-       onclick="launchGame(this)">
-    <div class="icon">
-      <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/refs/heads/main/icons/SRB2KART.ico">
-    </div>
-    <div class="label">SRB2 Kart</div>
-  </div>
+  <script>
+    var launcher = document.getElementById("launcher");
+    var player = document.getElementById("player");
+    var currentIframe = null;
+    var audio = null;
 
-</div>
-
-<div id="player"></div>
-
-<script>
-  const launcher = document.getElementById("launcher");
-  const player = document.getElementById("player");
-
-  let currentIframe = null;
-  let audio = null;
-
-  function playSound(file) {
-    if (audio) {
-      audio.pause();
-      audio = null;
+    function playSound(file) {
+      if (audio) { try { audio.pause(); } catch (e) {} audio = null; }
+      audio = new Audio(file);
+      audio.volume = 0.6;
+      audio.play().catch(function(){});
+      audio.onended = function () { audio = null; };
     }
-    audio = new Audio(file);
-    audio.volume = 0.6;
-    audio.play();
-    audio.onended = () => audio = null;
-  }
 
-  function launchGame(el) {
-    const url = el.dataset.url;
-    const openBlank = el.dataset.openblank === "1";
-
-    playSound("sounds/open.mp3");
-
-    /* ✅ about:blank path */
-    if (openBlank) {
-      const win = window.open("about:blank", "_blank");
+    function openAboutBlank(url) {
+      var win = window.open("about:blank", "_blank");
       if (!win) return;
 
+      // No backticks used anywhere (prevents stray `` issues)
       win.document.open();
-      win.document.write(`
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Game</title>
-          </head>
-          <body>
-            <script>
-              location.replace("${url}");
-            <\/script>
-          </body>
-        </html>
-      `);
+      win.document.write(
+        '<!DOCTYPE html>' +
+        '<html><head>' +
+        '<meta charset="utf-8">' +
+        '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+        '<title>Game</title>' +
+        '</head><body>' +
+        '<script>location.replace("' + url.replace(/"/g, '\\"') + '");<\/script>' +
+        '</body></html>'
+      );
       win.document.close();
-      return;
     }
 
-    /* ✅ embedded path (original behavior) */
-    document.querySelectorAll("#launcher img").forEach(img => img.remove());
-    launcher.style.opacity = "0";
+    function launchGame(el) {
+      var url = el.getAttribute("data-url");
+      var openBlank = el.getAttribute("data-openblank") === "1";
 
-    player.style.display = "block";
-    player.className = "zoom-in";
+      playSound("sounds/open.mp3");
 
-    currentIframe = document.createElement("iframe");
-    currentIframe.src = url;
-    currentIframe.allow = "fullscreen; gamepad; autoplay";
-    player.appendChild(currentIframe);
-  }
+      // Mode 1: about:blank new tab (no size limits)
+      if (openBlank) {
+        openAboutBlank(url);
+        return;
+      }
 
-  function closeGame() {
-    if (!currentIframe) return;
+      // Mode 0: original embedded behavior
+      // memory saving: remove launcher images behind the embed
+      var imgs = document.querySelectorAll("#launcher img");
+      for (var i = 0; i < imgs.length; i++) imgs[i].remove();
 
-    playSound("sounds/close.mp3");
-    player.className = "zoom-out";
+      launcher.style.opacity = "0";
 
-    setTimeout(() => {
-      player.innerHTML = "";
-      player.style.display = "none";
-      launcher.style.opacity = "1";
-      location.reload();
-    }, 450);
-  }
+      player.style.display = "block";
+      player.className = "zoom-in";
 
-  document.addEventListener("keydown", e => {
-    if (e.altKey && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
-      closeGame();
+      currentIframe = document.createElement("iframe");
+      currentIframe.src = url;
+      currentIframe.setAttribute("allow", "fullscreen; gamepad; autoplay");
+      currentIframe.setAttribute("allowfullscreen", "");
+      player.appendChild(currentIframe);
     }
-  });
-</script>
 
+    function closeGame() {
+      if (!currentIframe) return;
+
+      playSound("sounds/close.mp3");
+      player.className = "zoom-out";
+
+      setTimeout(function () {
+        player.innerHTML = "";
+        player.style.display = "none";
+        launcher.style.opacity = "1";
+        // reload to restore images cleanly
+        location.reload();
+      }, 450);
+    }
+
+    // ALT + LEFT or RIGHT closes embedded game only
+    document.addEventListener("keydown", function (e) {
+      if (e.altKey && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+        closeGame();
+      }
+    });
+  </script>
 </body>
 </html>
 ``
