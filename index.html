@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <title>Launcher</title>
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <!-- ✅ Launcher icon (Option B: local, reliable) -->
+  <link rel="icon" type="image/x-icon" href="icons/launcher/favicon.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="icons/launcher/favicon.ico">
 
-  <!-- PWA manifest -->
+  <!-- ✅ PWA manifest -->
   <link rel="manifest" href="manifest.json">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -104,7 +105,7 @@
 
   <div id="launcher">
 
-    <!-- GAME: Sonic 4 EP1 -->
+    <!-- ✅ GAME: Sonic 4 EP1 -->
     <div class="game"
          data-url="games/sonic4ep1/index.html"
          data-openblank="1"
@@ -117,7 +118,7 @@
       <div class="label">Sonic 4 EP1</div>
     </div>
 
-    <!-- GAME: Sonic CD -->
+    <!-- ✅ GAME: Sonic CD -->
     <div class="game"
          data-url="games/sonic%20CD/index.html"
          data-openblank="0"
@@ -130,7 +131,7 @@
       <div class="label">Sonic Cd (no save)</div>
     </div>
 
-    <!-- GAME: SRB2 Kart -->
+    <!-- ✅ GAME: SRB2 Kart -->
     <div class="game"
          data-url="games/SRB2KART/index.html"
          data-openblank="0"
@@ -165,7 +166,6 @@
       var win = window.open("about:blank", "_blank");
       if (!win) return;
 
-      // No backticks used anywhere (prevents stray `` issues)
       win.document.open();
       win.document.write(
         '<!DOCTYPE html>' +
@@ -186,14 +186,13 @@
 
       playSound("sounds/open.mp3");
 
-      // Mode 1: about:blank new tab (no size limits)
+      // Mode 1: about:blank new tab (no embed / no size limits)
       if (openBlank) {
         openAboutBlank(url);
         return;
       }
 
-      // Mode 0: original embedded behavior
-      // memory saving: remove launcher images behind the embed
+      // Mode 0: embedded iframe (original behavior)
       var imgs = document.querySelectorAll("#launcher img");
       for (var i = 0; i < imgs.length; i++) imgs[i].remove();
 
@@ -219,12 +218,10 @@
         player.innerHTML = "";
         player.style.display = "none";
         launcher.style.opacity = "1";
-        // reload to restore images cleanly
         location.reload();
       }, 450);
     }
 
-    // ALT + LEFT or RIGHT closes embedded game only
     document.addEventListener("keydown", function (e) {
       if (e.altKey && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
         closeGame();
