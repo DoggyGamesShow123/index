@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <title>Launcher</title>
 
-icons/launcher/favicon.ico
+<!-- ✅ Proper favicon -->
+<link rel="icon" type="image/x-icon" href="icons/launcher/favicon.ico">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -129,50 +131,55 @@ h1{
 
 <div id="launcher">
 
+  <!-- Sonic 4 EP1 -->
   <div class="game" data-url="games/sonic4ep1/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
       <div class="icon">
-        https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/Sonic4ep1.png
+        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/Sonic4ep1.png">
       </div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/Sonic4ep1.png')"></div>
     </div>
     <div class="label">Sonic 4 EP1</div>
   </div>
 
+  <!-- Sonic CD -->
   <div class="game" data-url="games/sonic%20CD/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
       <div class="icon">
-        https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/SonicCD.png
+        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/SonicCD.png">
       </div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/SonicCD.png')"></div>
     </div>
     <div class="label">Sonic CD</div>
   </div>
 
-    <div class="game" data-url="games/postal1/index.html" data-openblank="0" onclick="launchGame(this)">
+  <!-- Postal 1 -->
+  <div class="game" data-url="games/postal1/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
       <div class="icon">
-        https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/postal1.png
+        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/postal1.png">
       </div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/postal1.png')"></div>
     </div>
     <div class="label">Postal 1</div>
   </div>
 
-    <div class="game" data-url="games/postal1/index.html" data-openblank="0" onclick="launchGame(this)">
+  <!-- Sega Saturn -->
+  <div class="game" data-url="games/postal1/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
       <div class="icon">
-        https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/SATURN_EMULATOR.jpg
+        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/SATURN_EMULATOR.jpg">
       </div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/SATURN_EMULATOR.jpg')"></div>
     </div>
     <div class="label">Sega Saturn</div>
   </div>
 
-    <div class="game" data-url="games/postal1/index.html" data-openblank="0" onclick="launchGame(this)">
+  <!-- Sonic 2 CC -->
+  <div class="game" data-url="games/postal1/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
       <div class="icon">
-        https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/Sonic2cc.png
+        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/Sonic2cc.png">
       </div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/Sonic2cc.png')"></div>
     </div>
@@ -184,8 +191,9 @@ h1{
 
 <div id="player"></div>
 
-js/water-gl.jsscript>
-js/controller.js
+<!-- ✅ Scripts load correctly -->
+<script src="js/water-gl.js"></script>
+<script src="js/controller.js"></script>
 
 <script>
 const launcher=document.getElementById("launcher");
@@ -225,3 +233,4 @@ document.addEventListener("keydown",e=>{
 
 </body>
 </html>
+``
