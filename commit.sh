@@ -7,7 +7,7 @@ git add -A
 
 # Commit with a message (use argument if provided, otherwise prompt)
 if [ -z "$1" ]; then
-  echo "change:"
+  echo "what do you want to commit?:"
   read message
 else
   message="$1"
