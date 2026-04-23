@@ -5,8 +5,6 @@
 <title>Launcher</title>
 
 <link rel="icon" href="icons/launcher/favicon.ico">
-<link rel="manifest" href="manifest.json">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -15,12 +13,11 @@ html,body{
   width:100%;
   height:100%;
   overflow:hidden;
-  background:#04141f;
+  background:#04131f;
   font-family:Arial,Helvetica,sans-serif;
   color:white;
 }
 
-/* Water */
 #ocean{
   position:fixed;
   inset:0;
@@ -50,16 +47,20 @@ h1{
   cursor:pointer;
 }
 
+.icon-wrap{
+  position:relative;
+  width:96px;
+  margin:auto;
+}
+
+/* Icon */
 .icon{
   width:96px;
   height:96px;
-  margin:auto;
   border-radius:18px;
-  background:rgba(20,30,45,.7);
-  backdrop-filter:blur(6px);
   overflow:hidden;
-  box-shadow:0 10px 30px rgba(0,0,0,.5);
-  transition:.3s;
+  background:#222;
+  box-shadow:0 10px 25px rgba(0,0,0,.6);
 }
 
 .icon img{
@@ -68,8 +69,19 @@ h1{
   object-fit:cover;
 }
 
-.game:hover .icon{
-  transform:scale(1.1);
+/* Reflection */
+.reflect{
+  position:absolute;
+  top:100%;
+  left:0;
+  width:100%;
+  height:50%;
+  background-repeat:no-repeat;
+  background-size:100% 100%;
+  transform:scaleY(-1);
+  opacity:.35;
+  filter:blur(2px);
+  mask-image:linear-gradient(to bottom, rgba(0,0,0,.6), transparent);
 }
 
 .label{
@@ -92,17 +104,17 @@ h1{
   border:0;
 }
 
-/* Xbox-style cursor */
+/* Xbox cursor */
 #padCursor{
   position:fixed;
-  width:28px;
-  height:28px;
+  width:26px;
+  height:26px;
   border:2px solid rgba(200,240,255,.9);
   border-radius:50%;
   pointer-events:none;
-  z-index:9;
   display:none;
-  box-shadow:0 0 14px rgba(120,200,255,.8);
+  z-index:9;
+  box-shadow:0 0 12px rgba(120,200,255,.9);
 }
 </style>
 </head>
@@ -113,23 +125,31 @@ h1{
 <div id="padCursor"></div>
 
 <div id="ui">
-  <h1>Launcher</h1>
+<h1>Launcher</h1>
 
-  <div id="launcher">
-    <div class="game" data-url="games/sonic4ep1/index.html" data-openblank="1" onclick="launchGame(this)">
+<div id="launcher">
+
+  <div class="game" data-url="games/sonic4ep1/index.html" data-openblank="1" onclick="launchGame(this)">
+    <div class="icon-wrap">
       <div class="icon">
         <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/Sonic4ep1.png">
       </div>
-      <div class="label">Sonic 4 EP1</div>
+      <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/Sonic4ep1.png')"></div>
     </div>
+    <div class="label">Sonic 4 EP1</div>
+  </div>
 
-    <div class="game" data-url="games/sonic%20CD/index.html" data-openblank="0" onclick="launchGame(this)">
+  <div class="game" data-url="games/sonic%20CD/index.html" data-openblank="0" onclick="launchGame(this)">
+    <div class="icon-wrap">
       <div class="icon">
         <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/SonicCD.png">
       </div>
-      <div class="label">Sonic CD</div>
+      <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/SonicCD.png')"></div>
     </div>
+    <div class="label">Sonic CD</div>
   </div>
+
+</div>
 </div>
 
 <div id="player"></div>
