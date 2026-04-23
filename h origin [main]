@@ -1,0 +1,551 @@
+[33mcommit f0f3d24fdbbefb3a78de5308c68d589aed2bffc5[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Thu Apr 23 10:25:00 2026 -0400
+
+    Add Postal 1 game section to index.html
+    
+    Added a new game section for Postal 1 with an icon and label.
+
+[33mcommit 3f83ed71e0b3c6754db0758141ceb7c656fa91a0[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Thu Apr 23 10:16:16 2026 -0400
+
+    Refactor index.html for styling and structure updates
+
+[33mcommit 4ab338cd7dea62b28ab6143c02f028ee827291bd[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Thu Apr 23 10:15:50 2026 -0400
+
+    Refactor gamepad cursor update logic
+
+[33mcommit 1f1ba3f942bcd371f055a9a24036106e058b63cf[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Thu Apr 23 10:15:24 2026 -0400
+
+    Refactor WebGL water simulation code
+
+[33mcommit 671cb519dff754228465e1fd21fd8fc94b769135[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Thu Apr 23 10:13:57 2026 -0400
+
+    Add gamepad cursor control functionality
+
+[33mcommit eb78690bddfe66ed9dc1c8c46ac9d2e2b8edad70[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Thu Apr 23 09:59:29 2026 -0400
+
+    Refactor water rendering logic and update modes
+
+[33mcommit dfb0a08a583edada0ea808a338d65b4e448f5474[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Thu Apr 23 09:59:17 2026 -0400
+
+    Update index.html
+
+[33mcommit ba6048015f32722b21a03a3941afd2e2632879d7[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Thu Apr 23 09:53:05 2026 -0400
+
+    Add WebGL water simulation script
+
+[33mcommit 12011688bfbd75825f8873959a2d9179a4359497[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Thu Apr 23 09:50:41 2026 -0400
+
+    Refactor HTML structure and styles for launcher
+
+[33mcommit 8684c0c40ba9fa72b68915a640000f06cb2f056f[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Apr 22 15:42:48 2026 -0400
+
+    Enhance UI with ocean background and styles
+    
+    Updated styles and added ocean background with ripple effects.
+
+[33mcommit f44e977ae70b0c3a68eb47d0212005e38e787905[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Apr 22 15:37:58 2026 -0400
+
+    Refactor game launching functionality and comments
+    
+    Refactor game launching logic to support embedded mode and about:blank tab. Update comments and clean up unused code.
+
+[33mcommit 1832d09d96e9fd76294e5a9bec6dac22294bdafb[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Apr 22 15:31:49 2026 -0400
+
+    Change data-openblank attribute to '1' for games
+
+[33mcommit 6d8441780ba30febf40223a422b8c06a2e54ead8[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Apr 22 15:29:42 2026 -0400
+
+    Update comments and favicon links in index.html
+
+[33mcommit db8fa14bcf560578f15a5b78a6bf9479557d6e11[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Apr 22 15:29:24 2026 -0400
+
+    Update manifest.json
+
+[33mcommit 661da888f319a7f3ef977019303bb0e6be7b17a4[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Apr 22 15:24:48 2026 -0400
+
+    Rename icons/favicon (6).ico to icons/launcher/favicon.ico
+
+[33mcommit cef748c016e639c8a7fe904d936c9d9e7cb607cd[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Apr 22 15:24:15 2026 -0400
+
+    Add files via upload
+
+[33mcommit 1bccac96a6ef61b03dcb224ef573c29e68a83a4e[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Apr 22 15:12:30 2026 -0400
+
+    Update index.html
+
+[33mcommit eda8866aa45ad957743e818a22851ad9b7554632[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Apr 22 15:00:27 2026 -0400
+
+    Update index.html
+
+[33mcommit fadeea9d9845b3f5d6b35d3ca4584d937bdf9786[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Apr 22 14:56:26 2026 -0400
+
+    Refactor index.html for improved structure and style
+
+[33mcommit e5070838d293899ee696daa658ac9817aad33127[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Apr 22 14:53:55 2026 -0400
+
+    Enhance game launching and add embedded player
+    
+    Refactor game launching mechanism to use data attributes for URL and openBlank options. Add embedded player functionality for games.
+
+[33mcommit d81fbeb402626df097592d63b0115f7cba61dbef[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Apr 22 14:49:54 2026 -0400
+
+    Refactor game section and clean up styles
+    
+    Removed unused player styles and animations. Updated game labels for consistency.
+
+[33mcommit 1c4a1315bd8578990150dc38c4461f54c5f1f837[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Apr 22 14:09:12 2026 -0400
+
+    Add files via upload
+
+[33mcommit 5c22284c7539d36c6df59d6f5da4967a942864dd[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Apr 22 14:05:45 2026 -0400
+
+    Add files via upload
+
+[33mcommit 3a4171fbebd8c443817557d5fbbb11bdee378d2f[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Apr 22 14:02:53 2026 -0400
+
+    Rename games/Sonic2cc.html to games/Sonic2cc/index.html
+
+[33mcommit b28ff5704d6b32abaae60935a7026e45a6e4b9f4[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Apr 22 13:57:49 2026 -0400
+
+    Rename games/SATURN_EMULATOR.html to games/SATURN_EMULATOR/index.html
+
+[33mcommit 5cd3f233eab8866a22777414c40aca7f57e2a992[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Apr 22 13:56:13 2026 -0400
+
+    Rename games/Knuckles32x(v2).html to games/Knuckles32x(v2)/index.html
+
+[33mcommit 3292988dc607ee8ef1ddc8c0567b8fbb71b04647[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Apr 22 13:53:52 2026 -0400
+
+    Add files via upload
+
+[33mcommit 265ff1461c62e552187bc0203396c778ca37d607[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Apr 22 13:47:45 2026 -0400
+
+    Add files via upload
+
+[33mcommit c91eb7e48cb9dfd4ddb930a38a7dd28d2c66869c[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Apr 22 13:45:50 2026 -0400
+
+    Rename games/POSTAL !.html to games/postal1/index.html
+
+[33mcommit c820779dbf5376dded50d8b2b38cc60e1f935b21[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Apr 22 13:41:16 2026 -0400
+
+    postal embled
+
+[33mcommit 31071af99db0a6c252a8d063bd4f2e106bc234d6[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 15:38:33 2026 -0400
+
+    Update label from 'Sonic Cd (no save)' to 'SRB2 Kart'
+
+[33mcommit b921141cc649a59ff76d481d83cb2cde5810782b[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 15:33:03 2026 -0400
+
+    Add Sonic Robo Blast 2 Kart game section
+
+[33mcommit 6590d0696a5868b3651760f1ae666e315dacaf21[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 15:27:50 2026 -0400
+
+    Update game labels and comments in index.html
+
+[33mcommit ddf43f73c2808a3636200e55b77cf78cbe675b51[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 15:24:05 2026 -0400
+
+    Add Sonic 4 EP1 game section to index.html
+
+[33mcommit 76256ff4f223e35628661c8148f0c418f6a95632[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 15:22:55 2026 -0400
+
+    Rename image.png to SonicCD.png
+
+[33mcommit ca305c8a60cd426e938b6c0c85dce174c2903f2f[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 15:21:50 2026 -0400
+
+    Add files via upload
+
+[33mcommit 38543b90c39701276d5bb6123538737b76f43db4[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 15:12:44 2026 -0400
+
+    Enhance HTML with favicon and manifest links
+    
+    Updated comments and added proper favicon and PWA manifest links.
+
+[33mcommit f46e59e92343d2bd7d8b82e1858cae8bf454012c[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 15:09:40 2026 -0400
+
+    Update game thumbnail for Sonic 4 EP1
+
+[33mcommit 49890bfd3083b03aacc0e6262fc86fdf7555dbb0[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 15:05:01 2026 -0400
+
+    Refactor HTML structure and styles for launcher
+    
+    Updated styles and structure for launcher and game elements.
+
+[33mcommit 28303006d1bda60da7a9a9c578f0896d95c7b163[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 13:03:35 2026 -0400
+
+    updated index as co pilot said
+
+[33mcommit 96f013e86c97194dec0c0173cac99ca5a3cd8c03[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 13:01:49 2026 -0400
+
+    Rename 3-09 Achievement.mp3 to sounds/close.mp3
+
+[33mcommit 866233f82ad348adfab1a57880b50185523bd961[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 13:01:29 2026 -0400
+
+    Rename 4-18 Event.mp3 to sounds/open.mp3
+
+[33mcommit 638943f08469e22cc2e10a2c939b634cd1823206[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 13:00:01 2026 -0400
+
+    Add manifest.json for web app configuration
+
+[33mcommit 0a4bcdd1b2b3d49f121b6f6fa1cc21f07fa6fd49[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 12:59:11 2026 -0400
+
+    SOUND!
+
+[33mcommit df51ed9e4a9227e9ecd05c8e5d767167c8709066[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 12:57:37 2026 -0400
+
+    Rename Sonic4ep1.png to thumb/Sonic4ep1.png
+
+[33mcommit d8239f7e4e09b7ccee5e205dfe08532220717d48[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 12:57:15 2026 -0400
+
+    Rename marble.html to games/marble blast ultra/index.html
+
+[33mcommit b2683a7a7edfee7d03faff4ed8b6675b94a44d22[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 12:56:52 2026 -0400
+
+    Update index.html
+
+[33mcommit 3ebf4f0a361cf34aabf1c51175749dac1aa115f7[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 12:47:14 2026 -0400
+
+    Rename Sonic 1?.html to games/Sonic1/index.html
+
+[33mcommit be7cc46f4561dd0313318516ed09c36efaa0ab5a[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 12:46:41 2026 -0400
+
+    Rename SRB2KART.html to games/SRB2KART/index.html
+
+[33mcommit d81fd72f8373b685a0fd226a26ca5f93a1de7d62[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 12:46:06 2026 -0400
+
+    Rename FnaE.html to games/fnae/index.html
+
+[33mcommit ed8f9ef3d65ced007a20d37297b2e835489e84b4[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 12:45:39 2026 -0400
+
+    Rename SonicCD.html to games/sonic CD/index.html
+
+[33mcommit cb8e023ec761b3373fdf0692752128622b67d406[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 12:44:51 2026 -0400
+
+    Update title and structure of index.html
+
+[33mcommit 88bd0dec46de7c64805b35e050d9f6a64244498d[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 12:44:16 2026 -0400
+
+    Refactor index.html for new title and favicon
+    
+    Updated the title and favicon, and removed unnecessary styles and scripts.
+
+[33mcommit dea28b1ed7145cad67b544da72a8a8e724a3a953[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 12:42:53 2026 -0400
+
+    Rename Sonic4ep1.html to games/sonic4ep1/index.html
+
+[33mcommit c8717f19bc265e311088ca572c9588ea031606d8[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 12:41:58 2026 -0400
+
+    Update index.html
+
+[33mcommit b5e5ef060a4017110c2d4643e878cab9e6d910d3[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 12:41:08 2026 -0400
+
+    Create README for web game launcher
+    
+    Added a README file with project details and features.
+
+[33mcommit 1e37b3c56c6ff0256c4b348dcfe3165140d080c2[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 12:40:19 2026 -0400
+
+    Add Sonic 4 Episode 1 to games.json
+
+[33mcommit 1bbac67fb388114f15b8ac8f301d46cbcbf45ba2[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 12:38:32 2026 -0400
+
+    Add new file Sonic4ep1.html
+
+[33mcommit f0a484e5bf9f5432740d40bdab9efb57b3276633[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 12:38:16 2026 -0400
+
+    Rename image.png to Sonic4ep1.png
+
+[33mcommit 7327c0cf5c44a92018fc29fdd1f205b4080662cf[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 12:37:52 2026 -0400
+
+    Add files via upload
+
+[33mcommit 46f9d0509e2c420eb15f36e14749dbcf5589abb6[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 12:32:45 2026 -0400
+
+    Rename favicon (4).ico to Sonic4ep1.ico
+
+[33mcommit d61654fe70beda0cd5a40c4080d7a2ac05f3e0fe[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 10:00:40 2026 -0400
+
+    Update index.html
+
+[33mcommit 89f1355382c4f7cd87810661edf2c98463dc0b3e[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 09:59:43 2026 -0400
+
+    Rename favicon (5).ico to SRB2KART.ico
+
+[33mcommit b671a63892f7f32052463410e6a567dbd0d8d6e0[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 09:59:18 2026 -0400
+
+    Update favicon link in index.html
+
+[33mcommit 682f8c3979deeb566408b3d31315fab008086575[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 09:57:20 2026 -0400
+
+    Add initial HTML structure for Launcher page
+
+[33mcommit 1d256c47601e6c414abc43560dd17acaf1d41c06[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 09:43:09 2026 -0400
+
+    Update HTML structure and embed iframe
+
+[33mcommit 31bab4d1d567ca942ba07552e10a3a18a85df567[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 09:41:32 2026 -0400
+
+    Add files via upload
+
+[33mcommit a1481165311705f9fc7cd6d2663d684e567a8415[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Apr 17 09:40:53 2026 -0400
+
+    Add files via upload
+
+[33mcommit ef8c236e2095e5089d9fe61665945a17f62040b8[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Mar 25 14:52:30 2026 -0400
+
+    Rename favicon (3).ico to Saturn.ico
+
+[33mcommit b3a3a930dea2b636f3090bc1f68944232ef613c2[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Mar 25 14:52:11 2026 -0400
+
+    Add files via upload
+
+[33mcommit 3271486d3f0fc8cc09acacd7e8a19d34796431bb[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Mar 25 14:51:04 2026 -0400
+
+    Rename Saturn.ico to Saturn(old).ico
+
+[33mcommit 3f2e3ba548fa5033766da03ae2cdadcd85de1dc2[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Mar 25 14:47:53 2026 -0400
+
+    Rename favicon (2).ico to icons/Saturn.ico
+
+[33mcommit a4f303d9323af8229a6fd5b0b66c8ed03c7e005a[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Mar 25 14:47:35 2026 -0400
+
+    Add files via upload
+
+[33mcommit 6ecb36a399c3b648427e68ad1e4c4e3430afe51d[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Mar 25 14:47:22 2026 -0400
+
+    Delete icons/Saturn.ico
+
+[33mcommit b89b78e591f459545ca791040a82acdaf45c7b2b[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Mar 25 14:42:02 2026 -0400
+
+    Rename favicon (1).ico to icons/Saturn.ico
+
+[33mcommit dd2e6b664db749b5b8f390fc7c329a1910591dab[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Wed Mar 25 14:41:38 2026 -0400
+
+    Add files via upload
+
+[33mcommit 26bcdedae31666e1049d57f29ceaa0788dfa9de7[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Tue Mar 17 12:52:40 2026 -0400
+
+    Update SRB2KART.html
+
+[33mcommit 29454e0dd7c80a5afda76a6901acbcb62821d76b[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Tue Mar 17 12:50:01 2026 -0400
+
+    Update Sonic 1?.html
+
+[33mcommit 077a6d47b629e31b5ac80dc799accba03411a398[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Tue Mar 17 12:49:28 2026 -0400
+
+    Create SRB2KART.html
+
+[33mcommit 48a17c3f7349228a646567df4eeba114f857b802[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Tue Mar 17 12:44:24 2026 -0400
+
+    Rename Sonic 1? to Sonic 1?.html
+
+[33mcommit 1215e2365cdafd0b9245c2840b4e57ba5fe47473[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Tue Mar 17 12:44:08 2026 -0400
+
+    Create Sonic 1?
+
+[33mcommit 5df4a69c76f9eae319932a5c316a06cd8b670ed2[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Tue Mar 17 12:43:18 2026 -0400
+
+    Update SonicCD.html
+
+[33mcommit 421d05986109c7ac15f615af2486ee595ee6a343[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Tue Mar 17 12:42:10 2026 -0400
+
+    Update FnaE.html
+
+[33mcommit ae2284bc1943148b22c01ffe252932eb5fb56957[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Fri Mar 13 12:48:40 2026 -0400
+
+    Create marble.html
+
+[33mcommit 19f2fd57012f5692ad95e933fd831dfff666eac6[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Thu Mar 5 11:47:32 2026 -0500
+
+    Fix iframe src attribute in FnaE.html
+
+[33mcommit c545f914eb614b12560f07128d980b26bad265f8[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Thu Mar 5 11:44:39 2026 -0500
+
+    Update iframe source URL in FnaE.html
+
+[33mcommit 3830762db1c20bfb4ff457a417ba24b67eded205[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Thu Mar 5 10:59:33 2026 -0500
+
+    Rename SonicCD to SonicCD.html
+
+[33mcommit de206c61d08841ae3d20512d100453c0d227c580[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Thu Mar 5 10:59:07 2026 -0500
+
+    Update iframe source for Sonic CD
+
+[33mcommit 63a83d4f0451275e5d776618a166e822bffdbe2e[m
+Author: DoggyGamesShow123 <152580967+DoggyGamesShow123@users.noreply.github.com>
+Date:   Thu Mar 5 10:58:01 2026 -0500
+
+    Add Sonic4.html for embedded content

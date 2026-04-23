@@ -1,0 +1,11 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^git add index\\.html games/sonicmania/ thumb/sonicmania\\.png && git commit -m 'Add Sonic Mania game and update index' && git push origin main$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "git add": true,
+        "git commit": true,
+        "git push": true
+    }
+}
