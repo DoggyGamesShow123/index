@@ -1,468 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Launcher</title>
+<meta charset="UTF-8">
+<title>Launcher</title>
 
-  <!-- ✅ Launcher icon (Option B: local, reliable) -->
-  <link rel="icon" type="image/x-icon" href="icons/launcher/favicon.ico">
-  <link rel="apple-touch-icon" href="icons/launcher/favicon.ico">
+<link rel="icon" href="icons/launcher/favicon.ico">
+<link rel="manifest" href="manifest.json">
 
-  <!-- ✅ PWA manifest -->
-  <link rel="manifest" href="manifest.json">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#061726;
+  font-family:Arial,Helvetica,sans-serif;
+  color:white;
+}
 
-  <style>
-    :root { --bg:#0b1220; --card:#1d1d1dcc; }
+#ocean{
+  position:fixed;
+  inset:0;
+  z-index:0;
+}
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      background: var(--bg);
-      color: white;
-      font-family: Arial, Helvetica, sans-serif;
-      overflow: hidden;
-    }
+#ui{
+  position:relative;
+  z-index:2;
+}
 
-    /* 🌊 Ocean canvas background */
-    #ocean {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 0;
-      display: block;
-    }
+h1{
+  text-align:center;
+  margin:18px 0;
+}
 
-    /* Keep UI above ocean */
-    #ui {
-      position: relative;
-      z-index: 2;
-    }
+#launcher{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:24px;
+  padding:32px;
+}
 
-    h1 {
-      text-align: center;
-      margin: 20px 0 0;
-      text-shadow: 0 2px 18px rgba(0,0,0,0.6);
-    }
+.game{
+  text-align:center;
+  cursor:pointer;
+}
 
-    #launcher {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 24px;
-      padding: 32px;
-      transition: opacity 0.4s ease;
-    }
+.icon{
+  width:96px;
+  height:96px;
+  margin:auto;
+  border-radius:18px;
+  background:rgba(30,40,55,.7);
+  backdrop-filter:blur(6px);
+  overflow:hidden;
+  box-shadow:0 12px 25px rgba(0,0,0,.4);
+  transition:.3s;
+}
 
-    .game {
-      text-align: center;
-      cursor: pointer;
-      user-select: none;
-    }
+.icon img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
 
-    .icon {
-      width: 96px;
-      height: 96px;
-      margin: auto;
-      border-radius: 18px;
-      background: var(--card);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      transition: transform 0.35s ease, background 0.35s ease;
-      box-shadow: 0 12px 28px rgba(0,0,0,0.35);
-    }
+.game:hover .icon{
+  transform:scale(1.1);
+}
 
-    .icon img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+.label{
+  margin-top:8px;
+  font-size:14px;
+}
 
-    .game:hover .icon {
-      transform: scale(1.1);
-      background: rgba(42,42,42,0.75);
-    }
+#player{
+  position:fixed;
+  inset:0;
+  background:black;
+  display:none;
+  z-index:10;
+}
 
-    .label {
-      margin-top: 8px;
-      font-size: 14px;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.7);
-    }
+#player iframe{
+  width:100%;
+  height:100%;
+  border:0;
+}
 
-    /* Embedded player overlay (only used when data-openblank="0") */
-    #player {
-      position: fixed;
-      inset: 0;
-      background: black;
-      display: none;
-      z-index: 10;
-    }
+/* Control panel */
+#controls{
+  position:fixed;
+  right:14px;
+  bottom:14px;
+  background:rgba(0,0,0,.55);
+  border-radius:14px;
+  padding:10px 14px;
+  font-size:13px;
+  z-index:5;
+}
 
-    #player iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: block;
-    }
-
-    .zoom-in  { animation: zoomIn 0.45s ease forwards; }
-    .zoom-out { animation: zoomOut 0.45s ease forwards; }
-
-    @keyframes zoomIn {
-      from { transform: scale(0.85); opacity: 0; }
-      to   { transform: scale(1); opacity: 1; }
-    }
-    @keyframes zoomOut {
-      from { transform: scale(1); opacity: 1; }
-      to   { transform: scale(0.85); opacity: 0; }
-    }
-
-    /* Small hint */
-    #hint {
-      position: fixed;
-      left: 50%;
-      bottom: 14px;
-      transform: translateX(-50%);
-      font-size: 12px;
-      opacity: 0.75;
-      z-index: 2;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.8);
-      user-select: none;
-      pointer-events: none;
-    }
-  </style>
+#controls button{
+  margin:4px;
+  cursor:pointer;
+}
+</style>
 </head>
 
 <body>
-  <!-- 🌊 Ocean background -->
-  <canvas id="ocean"></canvas>
 
-  <!-- UI -->
-  <div id="ui">
-    <h1>Launcher</h1>
+<canvas id="ocean"></canvas>
 
-    <div id="launcher">
+<div id="ui">
+  <h1>Launcher</h1>
 
-      <!-- GAME: Sonic 4 EP1 (about:blank tab that stays about:blank and embeds fullscreen) -->
-      <div class="game"
-           data-url="games/sonic4ep1/index.html"
-           data-openblank="1"
-           onclick="launchGame(this)">
-        <div class="icon">
-          <img
-            src="https://raw.githubusercontent.com/DoggyGamesShow123/index/refs/heads/main/thumb/Sonic4ep1.png"
-            alt="Sonic 4 Episode I">
-        </div>
-        <div class="label">Sonic 4 EP1</div>
+  <div id="launcher">
+
+    <div class="game" data-url="games/sonic4ep1/index.html" data-openblank="1" onclick="launchGame(this)">
+      <div class="icon">
+        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/Sonic4ep1.png">
       </div>
-
-      <!-- GAME: Sonic CD (embedded) -->
-      <div class="game"
-           data-url="games/sonic%20CD/index.html"
-           data-openblank="0"
-           onclick="launchGame(this)">
-        <div class="icon">
-          <img
-            src="https://raw.githubusercontent.com/DoggyGamesShow123/index/refs/heads/main/thumb/SonicCD.png"
-            alt="Sonic CD">
-        </div>
-        <div class="label">Sonic Cd (no save)</div>
-      </div>
-
-      <!-- GAME: SRB2 Kart (embedded) -->
-      <div class="game"
-           data-url="games/SRB2KART/index.html"
-           data-openblank="0"
-           onclick="launchGame(this)">
-        <div class="icon">
-          <img
-            src="https://raw.githubusercontent.com/DoggyGamesShow123/index/refs/heads/main/icons/SRB2KART.ico"
-            alt="SRB2 Kart">
-        </div>
-        <div class="label">SRB2 Kart</div>
-      </div>
-
+      <div class="label">Sonic 4 EP1</div>
     </div>
+
+    <div class="game" data-url="games/sonic%20CD/index.html" data-openblank="0" onclick="launchGame(this)">
+      <div class="icon">
+        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/SonicCD.png">
+      </div>
+      <div class="label">Sonic CD</div>
+    </div>
+
   </div>
+</div>
 
-  <div id="player"></div>
-  <div id="hint">Click + drag for water ripples • ALT + ←/→ closes embedded games</div>
+<div id="player"></div>
 
-  <script>
-    // ----------------------------
-    // Launcher logic (your features)
-    // ----------------------------
-    var launcher = document.getElementById("launcher");
-    var player = document.getElementById("player");
-    var currentIframe = null;
-    var audio = null;
+<div id="controls">
+  Water:
+  <button onclick="water.setMode('calm')">Calm</button>
+  <button onclick="water.setMode('rain')">Rain</button>
+  <button onclick="water.setMode('storm')">Storm</button>
+</div>
 
-    function playSound(file) {
-      try {
-        if (audio) { audio.pause(); audio = null; }
-        audio = new Audio(file);
-        audio.volume = 0.6;
-        audio.play().catch(function(){});
-        audio.onended = function(){ audio = null; };
-      } catch (e) {}
-    }
+<script src="js/water-gl.js"></script>
 
-    function absoluteUrl(url) {
-      try { return new URL(url, window.location.href).href; }
-      catch (e) { return url; }
-    }
+<script>
+const launcher=document.getElementById("launcher");
+const player=document.getElementById("player");
+let iframe=null;
 
-    // ✅ about:blank tab that STAYS about:blank and embeds game fullscreen
-    function openAboutBlankEmbedded(url) {
-      // Open window first to avoid popup blockers
-      var win = window.open("about:blank", "_blank");
-      if (!win) {
-        // fallback if blocked
-        window.open(url, "_blank");
-        return;
-      }
+function launchGame(el){
+  const url=el.dataset.url;
+  const blank=el.dataset.openblank==="1";
 
-      var abs = absoluteUrl(url);
+  if(blank){
+    window.open(url,"_blank");
+    return;
+  }
 
-      // Sound AFTER opening window (popup-safe)
-      playSound("sounds/open.mp3");
+  if(window.water) water.pause();
 
-      win.document.open();
-      win.document.write(
-        '<!DOCTYPE html>' +
-        '<html><head>' +
-        '<meta charset="utf-8">' +
-        '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
-        '<title>Game</title>' +
-        '<link rel="icon" type="image/x-icon" href="' + absoluteUrl("icons/launcher/favicon.ico") + '">' +
-        '</head><body>' +
-        '<iframe id="g" src="' + abs.replace(/"/g, '&quot;') + '" allow="fullscreen; gamepad; autoplay" allowfullscreen></iframe>' +
-        '<script>' +
-          'var f=document.getElementById("g");' +
-          'document.documentElement.style.margin="0";' +
-          'document.body.style.margin="0";' +
-          'document.body.style.overflow="hidden";' +
-          'f.style.position="fixed";f.style.left="0";f.style.top="0";' +
-          'f.style.width="100vw";f.style.height="100vh";f.style.border="0";' +
-        '<\/script>' +
-        '</body></html>'
-      );
-      win.document.close();
-    }
+  launcher.style.opacity="0";
+  player.style.display="block";
+  iframe=document.createElement("iframe");
+  iframe.src=url;
+  iframe.allow="fullscreen;gamepad;autoplay";
+  player.appendChild(iframe);
+}
 
-    function launchEmbedded(url) {
-      playSound("sounds/open.mp3");
+document.addEventListener("keydown",e=>{
+  if(e.altKey&&(e.key==="ArrowLeft"||e.key==="ArrowRight")){
+    if(!iframe)return;
+    player.innerHTML="";
+    player.style.display="none";
+    launcher.style.opacity="1";
+    iframe=null;
+    if(window.water) water.resume();
+  }
+});
+</script>
 
-      // memory saving: remove launcher images behind the embed
-      var imgs = document.querySelectorAll("#launcher img");
-      for (var i = 0; i < imgs.length; i++) imgs[i].remove();
-
-      launcher.style.opacity = "0";
-
-      player.style.display = "block";
-      player.className = "zoom-in";
-
-      currentIframe = document.createElement("iframe");
-      currentIframe.src = url;
-      currentIframe.setAttribute("allow", "fullscreen; gamepad; autoplay");
-      currentIframe.setAttribute("allowfullscreen", "");
-      player.appendChild(currentIframe);
-    }
-
-    function launchGame(el) {
-      var url = el.getAttribute("data-url");
-      var openBlank = el.getAttribute("data-openblank") === "1";
-
-      if (openBlank) openAboutBlankEmbedded(url);
-      else launchEmbedded(url);
-    }
-
-    function closeGame() {
-      if (!currentIframe) return;
-
-      playSound("sounds/close.mp3");
-      player.className = "zoom-out";
-
-      setTimeout(function () {
-        player.innerHTML = "";
-        player.style.display = "none";
-        launcher.style.opacity = "1";
-        location.reload();
-      }, 450);
-    }
-
-    // ALT + LEFT/RIGHT closes embedded only
-    document.addEventListener("keydown", function (e) {
-      if (e.altKey && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
-        closeGame();
-      }
-    });
-
-    // -----------------------------------
-    // 🌊 Ocean background + ripple effects
-    // -----------------------------------
-    (function () {
-      var canvas = document.getElementById("ocean");
-      var ctx = canvas.getContext("2d", { alpha: false });
-
-      var W = 0, H = 0, t = 0;
-      var ripples = [];
-      var dragging = false;
-      var lastAdd = 0;
-
-      function resize() {
-        var dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-        W = Math.floor(window.innerWidth);
-        H = Math.floor(window.innerHeight);
-        canvas.width  = Math.floor(W * dpr);
-        canvas.height = Math.floor(H * dpr);
-        canvas.style.width = W + "px";
-        canvas.style.height = H + "px";
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      }
-      window.addEventListener("resize", resize);
-      resize();
-
-      function addRipple(x, y, strength) {
-        ripples.push({
-          x: x,
-          y: y,
-          r: 0,
-          s: strength || 1,
-          life: 0
-        });
-        // cap ripple count for performance
-        if (ripples.length > 80) ripples.splice(0, ripples.length - 80);
-      }
-
-      function oceanBase() {
-        // Background gradient
-        var g = ctx.createLinearGradient(0, 0, 0, H);
-        g.addColorStop(0, "#071428");
-        g.addColorStop(0.55, "#0b2a4a");
-        g.addColorStop(1, "#05101f");
-        ctx.fillStyle = g;
-        ctx.fillRect(0, 0, W, H);
-
-        // Soft moving light bands (waves)
-        ctx.globalAlpha = 0.22;
-        for (var i = 0; i < 7; i++) {
-          var y = (H * (0.20 + i * 0.11)) + Math.sin(t * 0.9 + i * 1.7) * 18;
-          var amp = 16 + i * 3;
-          ctx.beginPath();
-          for (var x = 0; x <= W; x += 18) {
-            var yy = y + Math.sin((x * 0.02) + t * (1.2 + i * 0.05)) * amp;
-            if (x === 0) ctx.moveTo(x, yy);
-            else ctx.lineTo(x, yy);
-          }
-          ctx.lineWidth = 3 + i * 0.25;
-          ctx.strokeStyle = i % 2 ? "rgba(120,200,255,0.40)" : "rgba(255,255,255,0.22)";
-          ctx.stroke();
-        }
-        ctx.globalAlpha = 1;
-      }
-
-      function drawRipples() {
-        // Ripples as expanding rings + highlight
-        for (var i = ripples.length - 1; i >= 0; i--) {
-          var p = ripples[i];
-          p.life += 1;
-          p.r += 3.2 + p.s * 1.6;
-
-          var fade = Math.max(0, 1 - p.life / 110);
-          if (fade <= 0) {
-            ripples.splice(i, 1);
-            continue;
-          }
-
-          // Outer ring
-          ctx.globalAlpha = 0.35 * fade;
-          ctx.lineWidth = 2;
-          ctx.strokeStyle = "rgba(170,230,255,1)";
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-          ctx.stroke();
-
-          // Inner ring
-          ctx.globalAlpha = 0.20 * fade;
-          ctx.lineWidth = 1.5;
-          ctx.strokeStyle = "rgba(255,255,255,1)";
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r * 0.62, 0, Math.PI * 2);
-          ctx.stroke();
-
-          // Soft glow
-          var rg = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 0.9);
-          rg.addColorStop(0, "rgba(255,255,255," + (0.08 * fade) + ")");
-          rg.addColorStop(1, "rgba(255,255,255,0)");
-          ctx.globalAlpha = 1;
-          ctx.fillStyle = rg;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r * 0.9, 0, Math.PI * 2);
-          ctx.fill();
-        }
-        ctx.globalAlpha = 1;
-      }
-
-      function tick() {
-        t += 0.016;
-        oceanBase();
-        drawRipples();
-
-        // subtle vignette for depth
-        var v = ctx.createRadialGradient(W/2, H/2, Math.min(W,H)*0.25, W/2, H/2, Math.max(W,H)*0.65);
-        v.addColorStop(0, "rgba(0,0,0,0)");
-        v.addColorStop(1, "rgba(0,0,0,0.35)");
-        ctx.fillStyle = v;
-        ctx.fillRect(0, 0, W, H);
-
-        requestAnimationFrame(tick);
-      }
-      requestAnimationFrame(tick);
-
-      // Input: click + drag to create ripples anywhere
-      function pointerPos(e) {
-        if (e.touches && e.touches.length) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-        return { x: e.clientX, y: e.clientY };
-      }
-
-      window.addEventListener("pointerdown", function (e) {
-        dragging = true;
-        var p = pointerPos(e);
-        addRipple(p.x, p.y, 1.2);
-      }, { passive: true });
-
-      window.addEventListener("pointermove", function (e) {
-        if (!dragging) return;
-        var now = performance.now();
-        // throttle ripple creation for performance
-        if (now - lastAdd < 35) return;
-        lastAdd = now;
-
-        var p = pointerPos(e);
-        addRipple(p.x, p.y, 0.9);
-      }, { passive: true });
-
-      window.addEventListener("pointerup", function () { dragging = false; }, { passive: true });
-      window.addEventListener("pointercancel", function () { dragging = false; }, { passive: true });
-      window.addEventListener("mouseleave", function () { dragging = false; }, { passive: true });
-
-      // tiny ambient ripples
-      setInterval(function () {
-        var x = Math.random() * W;
-        var y = Math.random() * H;
-        addRipple(x, y, 0.45);
-      }, 1400);
-    })();
-  </script>
 </body>
 </html>
-``
