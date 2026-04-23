@@ -1,15 +1,11 @@
 (function(){
 const canvas=document.getElementById("ocean");
-let gl=canvas.getContext("webgl",{antialias:false});
+const gl=canvas.getContext("webgl");
+if(!gl){ canvas.style.display="none"; return; }
 
-const lowEnd = !gl || /Android|iPhone|iPad/i.test(navigator.userAgent);
-if(!gl||lowEnd){
-  canvas.style.display="none";
-  window.water={pause(){},resume(){},setMode(){}};
-  return;
-}
+let W,H,time=0;
+let mx=0,my=0,impulse=0;
 
-let W,H,time=0,mode=0;
 function resize(){
   W=canvas.width=innerWidth;
   H=canvas.height=innerHeight;
@@ -18,39 +14,50 @@ function resize(){
 addEventListener("resize",resize);
 resize();
 
-const vs=`attribute vec2 p;varying vec2 uv;
-void main(){uv=p*.5+.5;gl_Position=vec4(p,0,1);}`;
+const vs=`
+attribute vec2 p;
+varying vec2 uv;
+void main(){uv=p*.5+.5;gl_Position=vec4(p,0,1);}
+`;
 
-const fs=`precision highp float;
+const fs=`
+precision highp float;
 varying vec2 uv;
 uniform float t;
-uniform int mode;
+uniform vec2 m;
+uniform float impulse;
 
-float n(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5);}
+float wave(vec2 p){
+  return sin(p.x*8.+t*2.)*.04 +
+         sin(p.y*6.-t*1.6)*.04;
+}
 
 void main(){
- vec2 p=uv*2.-1.;
- float wave=sin(p.x*6.+t)*.04+sin(p.y*4.-t)*.04;
+  vec2 p=uv*2.-1.;
+  float d=length(p-m);
+  float drag=exp(-d*8.)*impulse;
 
- float caust=sin((p.x+p.y)*14.+t*2.);
- caust=pow(abs(caust),2.);
+  float w=wave(p)+drag;
 
- float fog=exp(-uv.y*4.);
+  vec3 deep=vec3(0.02,0.1,0.18);
+  vec3 shallow=vec3(0.1,0.4,0.6);
+  vec3 col=mix(deep,shallow,uv.y+w);
 
- if(mode==1) caust+=n(p*40.+t*3.)*.4;
- if(mode==2) caust+=n(p*70.+t*6.)*.9;
+  // caustics
+  float c=sin((p.x+p.y)*14.+t*3.);
+  col+=pow(abs(c),2.)*.08;
 
- vec3 deep=vec3(0.02,0.1,0.18);
- vec3 shallow=vec3(0.12,0.45,0.65);
- vec3 col=mix(deep,shallow,uv.y+wave);
+  gl_FragColor=vec4(col,1);
+}
+`;
 
- col+=caust*.12;
- col=mix(vec3(0.03,0.08,0.12),col,fog);
+function compile(t,s){
+  const sh=gl.createShader(t);
+  gl.shaderSource(sh,s);
+  gl.compileShader(sh);
+  return sh;
+}
 
- gl_FragColor=vec4(col,1);
-}`;
-
-function compile(t,s){const sh=gl.createShader(t);gl.shaderSource(sh,s);gl.compileShader(sh);return sh;}
 const prog=gl.createProgram();
 gl.attachShader(prog,compile(gl.VERTEX_SHADER,vs));
 gl.attachShader(prog,compile(gl.FRAGMENT_SHADER,fs));
@@ -65,20 +72,41 @@ gl.enableVertexAttribArray(loc);
 gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
 
 const ut=gl.getUniformLocation(prog,"t");
-const um=gl.getUniformLocation(prog,"mode");
+const um=gl.getUniformLocation(prog,"m");
+const ui=gl.getUniformLocation(prog,"impulse");
 
-(function loop(){
- time+=0.016;
- gl.uniform1f(ut,time);
- gl.uniform1i(um,mode);
- gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
- requestAnimationFrame(loop);
-})();
+function loop(){
+  time+=0.016;
+  impulse*=0.92;
+  gl.uniform1f(ut,time);
+  gl.uniform2f(um,mx,my);
+  gl.uniform1f(ui,impulse);
+  gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+  requestAnimationFrame(loop);
+}
+loop();
+
+/* Input */
+function setPos(x,y){
+  mx=(x/W)*2-1;
+  my=1-(y/H)*2;
+  impulse=Math.min(1,impulse+.08);
+}
+
+addEventListener("pointermove",e=>setPos(e.clientX,e.clientY));
+addEventListener("pointerdown",e=>{setPos(e.clientX,e.clientY); impulse=1;});
+
+/* Reflection distortion */
+setInterval(()=>{
+  document.querySelectorAll(".reflect").forEach(r=>{
+    const ox=(Math.random()-.5)*6;
+    r.style.transform=`scaleY(-1) translateX(${ox}px)`;
+  });
+},50);
 
 window.water={
- pause(){canvas.style.display="none";},
- resume(){canvas.style.display="block";},
- setMode(m){mode=m==="calm"?0:m==="rain"?1:2;}
+  pause(){canvas.style.display="none";},
+  resume(){canvas.style.display="block";}
 };
 })();
 ``
