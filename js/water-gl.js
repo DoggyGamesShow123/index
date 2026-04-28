@@ -361,6 +361,107 @@ loop();
 window.water = {
   pause:  function () { paused = true;  canvas.style.display = "none";  },
   resume: function () { paused = false; canvas.style.display = "block"; }
+
+// ── Mouse glow ────────────────────────────────────────────────────────────
+var glowEl = document.createElement("div");
+glowEl.id = "mouseGlow";
+document.body.appendChild(glowEl);
+
+var glowStyle = document.createElement("style");
+glowStyle.textContent = [
+  "#mouseGlow{",
+  "  position:fixed;",
+  "  width:320px;",
+  "  height:320px;",
+  "  border-radius:50%;",
+  "  pointer-events:none;",
+  "  z-index:1;",
+  "  transform:translate(-50%,-50%);",
+  "  opacity:0;",
+  "  transition:opacity 0.4s;",
+  "  mix-blend-mode:screen;",
+  "}"
+].join("");
+document.head.appendChild(glowStyle);
+
+var glowX = innerWidth / 2, glowY = innerHeight / 2;
+var glowVisible = false;
+var glowFadeTimer = null;
+
+function updateGlowColor() {
+  // Complementary-ish to current tint: shift hue ~150 degrees
+  // tint is [r,g,b] 0..1 — derive a hue-rotated version
+  var r = tintR, g = tintG, b = tintB;
+  // Simple hue rotation: swap and invert channels based on dominant
+  var gr, gg, gb;
+  if (r >= g && r >= b) {
+    // dominant red → shift to cyan-green
+    gr = g * 0.3; gg = b * 0.8 + 0.2; gb = r * 0.6 + 0.3;
+  } else if (g >= r && g >= b) {
+    // dominant green → shift to magenta-blue
+    gr = b * 0.6 + 0.3; gg = r * 0.3; gb = g * 0.8 + 0.2;
+  } else {
+    // dominant blue → shift to warm yellow-orange
+    gr = g * 0.8 + 0.35; gg = r * 0.6 + 0.25; gb = b * 0.2;
+  }
+  // Clamp
+  gr = Math.min(1, gr); gg = Math.min(1, gg); gb = Math.min(1, gb);
+
+  var ri = Math.round(gr * 255);
+  var gi = Math.round(gg * 255);
+  var bi = Math.round(gb * 255);
+
+  glowEl.style.background = [
+    "radial-gradient(circle, ",
+    "rgba(", ri, ",", gi, ",", bi, ",0.22) 0%, ",
+    "rgba(", ri, ",", gi, ",", bi, ",0.08) 40%, ",
+    "transparent 70%)"
+  ].join("");
+}
+
+// Re-colour glow whenever tint changes
+var _origWaterTint = window.waterTint;
+window.waterTint = function (r, g, b) {
+  tintR = r; tintG = g; tintB = b;
+  updateGlowColor();
+  if (_origWaterTint) _origWaterTint(r, g, b);
+};
+
+// Initial colour
+updateGlowColor();
+
+function showGlow(x, y) {
+  glowX = x; glowY = y;
+  glowEl.style.left = x + "px";
+  glowEl.style.top  = y + "px";
+  if (!glowVisible) {
+    glowVisible = true;
+    glowEl.style.opacity = "1";
+  }
+  clearTimeout(glowFadeTimer);
+  glowFadeTimer = setTimeout(function () {
+    glowVisible = false;
+    glowEl.style.opacity = "0";
+  }, 2000);
+}
+
+addEventListener("pointermove", function (e) {
+  showGlow(e.clientX, e.clientY);
+});
+
+addEventListener("pointerdown", function (e) {
+  // Pulse on click: briefly enlarge then snap back
+  glowEl.style.transition = "opacity 0.1s, width 0.12s, height 0.12s";
+  glowEl.style.width  = "480px";
+  glowEl.style.height = "480px";
+  showGlow(e.clientX, e.clientY);
+  setTimeout(function () {
+    glowEl.style.transition = "opacity 0.4s, width 0.3s, height 0.3s";
+    glowEl.style.width  = "320px";
+    glowEl.style.height = "320px";
+  }, 120);
+});
+  
 };
 
 })();
