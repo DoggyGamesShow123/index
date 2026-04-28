@@ -6,14 +6,22 @@ if (!gl) { canvas.style.display = "none"; return; }
 
 var W, H, time = 0, paused = false;
 
-// Colour tint (set by drain.js via window.waterTint)
 var tintR = 0.08, tintG = 0.35, tintB = 0.85; // default blue
 
-// Drain level: 1.0 = full, 0.0 = empty
-var drainLevel   = 1.0;
-var targetDrain  = 1.0;
-var DRAIN_SPEED  = 1 / (5.0  * 60); // drain to 0 over 5 s  (at 60 fps)
-var FILL_SPEED   = 1 / (4.0  * 60); // fill  to 1 over 4 s
+// drainLevel: 1.0 = full screen of water, 0.0 = empty
+// fillDir:    "drain" = level moving toward 0 (top to bottom drain)
+//             "fill"  = level moving toward 1 (bottom to top fill)
+var drainLevel  = 1.0;
+var fillDir     = "none"; // "none" | "drain" | "fill"
+
+var DRAIN_SPEED = 1 / (5.0 * 60);  // empties in 5 s at 60 fps
+var FILL_SPEED  = 1 / (4.0 * 60);  // fills   in 4 s at 60 fps
+
+// Pour stream state — active while filling
+var pourActive  = false;
+// Horizontal wander of pour point
+var pourX       = 0.5;
+var pourWander  = 0.0;
 
 function resize() {
   W = canvas.width  = innerWidth;
@@ -23,10 +31,9 @@ function resize() {
 addEventListener("resize", resize);
 resize();
 
-// ── Float texture extension ───────────────────────────────────────────────
+// ── Float texture ─────────────────────────────────────────────────────────
 var EXT_FLOAT = gl.getExtension("OES_texture_float");
 var TEX_TYPE  = EXT_FLOAT ? gl.FLOAT : gl.UNSIGNED_BYTE;
-
 var SIM_W = 256, SIM_H = 256;
 
 function makeSimTex() {
@@ -46,7 +53,7 @@ function makeSimTex() {
 }
 
 var bufs = [makeSimTex(), makeSimTex(), makeSimTex()];
-var BUF = 0;
+var BUF  = 0;
 var drops = [];
 
 // ── Shader helpers ────────────────────────────────────────────────────────
@@ -63,7 +70,6 @@ function compile(type, src) {
     console.warn(gl.getShaderInfoLog(sh));
   return sh;
 }
-
 function makeProg(vs, fs) {
   var p = gl.createProgram();
   gl.attachShader(p, compile(gl.VERTEX_SHADER,   vs));
@@ -94,9 +100,10 @@ var simProg = makeProg(BASE_VS, [
 "uniform vec2 uDrop;",
 "uniform float uDropR, uDropStr;",
 "uniform float uDrainLevel;",
-// Below the drain waterline the height field is zeroed out
+// wet region: uv.y >= (1 - drainLevel)  →  aboveFloor = 1
 "void main(){",
-"  float below = step(uv.y, 1.0 - uDrainLevel);",
+"  float floor  = 1.0 - uDrainLevel;",
+"  float inWater = step(floor, uv.y);",
 "  float cur  = texture2D(uCur,  uv).r;",
 "  float prev = texture2D(uPrev, uv).r;",
 "  float n = texture2D(uCur, uv+vec2(0.,      uPx.y)).r;",
@@ -107,21 +114,20 @@ var simProg = makeProg(BASE_VS, [
 "  next *= 0.984;",
 "  float d = length(uv - uDrop);",
 "  next -= uDropStr * smoothstep(uDropR, 0.0, d);",
-// zero out drained region
-"  next *= (1.0 - below);",
+"  next *= inWater;",
 "  gl_FragColor = vec4(next, 0., 0., 1.);",
 "}"
 ].join("\n"));
 bindQuad(simProg);
 
 var simU = {
-  prev:     gl.getUniformLocation(simProg, "uPrev"),
-  cur:      gl.getUniformLocation(simProg, "uCur"),
-  px:       gl.getUniformLocation(simProg, "uPx"),
-  drop:     gl.getUniformLocation(simProg, "uDrop"),
-  dropR:    gl.getUniformLocation(simProg, "uDropR"),
-  dropStr:  gl.getUniformLocation(simProg, "uDropStr"),
-  drain:    gl.getUniformLocation(simProg, "uDrainLevel"),
+  prev:    gl.getUniformLocation(simProg, "uPrev"),
+  cur:     gl.getUniformLocation(simProg, "uCur"),
+  px:      gl.getUniformLocation(simProg, "uPx"),
+  drop:    gl.getUniformLocation(simProg, "uDrop"),
+  dropR:   gl.getUniformLocation(simProg, "uDropR"),
+  dropStr: gl.getUniformLocation(simProg, "uDropStr"),
+  drain:   gl.getUniformLocation(simProg, "uDrainLevel"),
 };
 
 // ── Render program ────────────────────────────────────────────────────────
@@ -133,40 +139,60 @@ var renderProg = makeProg(BASE_VS, [
 "uniform vec2 uPx;",
 "uniform float uDrainLevel;",
 "uniform vec3 uTint;",
-// Waterline UV-Y threshold
+// Pour stream uniforms
+"uniform float uPourActive;",  // 0 or 1
+"uniform float uPourX;",       // 0..1 horizontal position
+"uniform float uWaterlineY;",  // UV-Y of current waterline (= 1 - drainLevel)
+
+"float streamAlpha(vec2 p){",
+"  float dx = p.x - uPourX;",
+// Stream narrows as it falls, slight wobble
+"  float wobble = sin(p.y * 38.0 + uTime * 6.0) * 0.004;",
+"  float width  = 0.012 + (1.0 - p.y) * 0.006;",
+"  float edge   = smoothstep(width, width * 0.3, abs(dx + wobble));",
+// Only draw stream above the waterline
+"  float aboveWater = step(uWaterlineY, p.y);",  // p.y < waterlineY means above water
+"  return edge * (1.0 - aboveWater) * uPourActive;",
+"}",
+
 "void main(){",
-"  float waterline = 1.0 - uDrainLevel;",
-"  float aboveWater = step(waterline, uv.y);",
+"  float waterlineY = 1.0 - uDrainLevel;",  // UV-Y: above this = air, below = water
+"  float inWater    = step(waterlineY, uv.y);",
 
 "  float h  = texture2D(uCur, uv).r;",
 "  float hL = texture2D(uCur, uv - vec2(uPx.x, 0.)).r;",
 "  float hD = texture2D(uCur, uv - vec2(0., uPx.y)).r;",
-"  vec2 nrm = vec2(h-hL, h-hD);",
+"  vec2  nrm = vec2(h - hL, h - hD);",
 
-// Base ocean colour driven by tint uniform
 "  vec3 deep    = uTint * 0.18;",
 "  vec3 shallow = uTint;",
 "  float bx = uv.x + nrm.x*1.8 + sin(uv.y*5.0 + uTime*1.2)*0.012;",
 "  float by = uv.y + nrm.y*1.8 + sin(uv.x*4.0 + uTime*0.9)*0.010;",
-"  vec3 col = mix(deep, shallow, clamp(by + h*1.4, 0.0, 1.0));",
+"  vec3 waterCol = mix(deep, shallow, clamp(by + h*1.4, 0.0, 1.0));",
 
-// Specular crest highlights
+// Specular
 "  float spec = pow(clamp(h*16.0, 0.0, 1.0), 3.0);",
-"  col += vec3(0.7, 0.92, 1.0) * spec * 0.5;",
+"  waterCol += vec3(0.7, 0.92, 1.0) * spec * 0.5;",
 
 // Caustics
-"  float cx = sin((uv.x+uv.y)*20.0 + uTime*2.8);",
-"  col += pow(abs(cx), 3.0) * 0.05 * (1.0 + h*8.0);",
+"  float cx = sin((uv.x + uv.y)*20.0 + uTime*2.8);",
+"  waterCol += pow(abs(cx), 3.0) * 0.05 * (1.0 + h*8.0);",
 
-// Foam at waterline edge
-"  float foam = smoothstep(0.0, 0.008, abs(uv.y - waterline));",
-"  col = mix(vec3(1.0), col, foam);",
+// Foam at waterline
+"  float foam = smoothstep(0.0, 0.007, abs(uv.y - waterlineY));",
+"  waterCol = mix(vec3(1.0), waterCol, foam);",
 
-// Drain: below waterline show wet dark rock/seafloor
-"  vec3 floor = vec3(0.04, 0.03, 0.03) + uTint * 0.04;",
-"  col = mix(floor, col, aboveWater);",
+// Seafloor below drained area
+"  vec3 floorCol = vec3(0.04, 0.03, 0.03) + uTint * 0.04;",
+"  vec3 col = mix(floorCol, waterCol, inWater);",
 
-// Subtle vignette
+// Pour stream drawn on top (in the air zone above water)
+"  float stream = streamAlpha(uv);",
+// Stream colour: tint-tinted white, slightly transparent
+"  vec3 streamCol = mix(col, uTint * 0.6 + vec3(0.5), stream * 0.82);",
+"  col = mix(col, streamCol, stream);",
+
+// Vignette
 "  float vig = 1.0 - smoothstep(0.5, 1.4, length(uv*2.0 - 1.0));",
 "  col *= 0.75 + 0.25*vig;",
 
@@ -176,14 +202,17 @@ var renderProg = makeProg(BASE_VS, [
 bindQuad(renderProg);
 
 var renderU = {
-  cur:   gl.getUniformLocation(renderProg, "uCur"),
-  time:  gl.getUniformLocation(renderProg, "uTime"),
-  px:    gl.getUniformLocation(renderProg, "uPx"),
-  drain: gl.getUniformLocation(renderProg, "uDrainLevel"),
-  tint:  gl.getUniformLocation(renderProg, "uTint"),
+  cur:        gl.getUniformLocation(renderProg, "uCur"),
+  time:       gl.getUniformLocation(renderProg, "uTime"),
+  px:         gl.getUniformLocation(renderProg, "uPx"),
+  drain:      gl.getUniformLocation(renderProg, "uDrainLevel"),
+  tint:       gl.getUniformLocation(renderProg, "uTint"),
+  pourActive: gl.getUniformLocation(renderProg, "uPourActive"),
+  pourX:      gl.getUniformLocation(renderProg, "uPourX"),
+  waterlineY: gl.getUniformLocation(renderProg, "uWaterlineY"),
 };
 
-// ── Drop / drain helpers ──────────────────────────────────────────────────
+// ── Public API ────────────────────────────────────────────────────────────
 function addDrop(clientX, clientY, strength) {
   drops.push({
     x: clientX / W,
@@ -193,17 +222,27 @@ function addDrop(clientX, clientY, strength) {
   });
 }
 
-window.waterDrop  = addDrop;
-window.waterTint  = function (r, g, b) { tintR = r; tintG = g; tintB = b; };
-window.waterDrain = function (isDraining) {
-  targetDrain = isDraining ? 0.0 : 1.0;
-  // Scatter random drops along the waterline for drama
-  if (isDraining) {
-    for (var i = 0; i < 12; i++) {
-      setTimeout(function () {
-        addDrop(Math.random() * W, Math.random() * H * 0.3, 0.5);
-      }, i * 180);
+window.waterDrop = addDrop;
+window.waterTint = function (r, g, b) { tintR = r; tintG = g; tintB = b; };
+
+window.waterDrain = function (mode) {
+  fillDir = mode; // "drain" or "fill"
+
+  if (mode === "drain") {
+    pourActive = false;
+    // Splash at waterline as draining begins
+    for (var i = 0; i < 10; i++) {
+      (function(i){ setTimeout(function () {
+        addDrop(Math.random() * W, drainLevel > 0 ? (1 - drainLevel) * H : 0, 0.45);
+      }, i * 200); })(i);
     }
+  }
+
+  if (mode === "fill") {
+    pourActive = true;
+    // Random horizontal pour point that slowly wanders
+    pourX    = 0.3 + Math.random() * 0.4;
+    pourWander = (Math.random() - 0.5) * 0.002;
   }
 };
 
@@ -230,15 +269,35 @@ setInterval(function () {
 
 // ── Render loop ───────────────────────────────────────────────────────────
 function stepSim() {
-  // Animate drain level
-  if (drainLevel < targetDrain) {
-    drainLevel = Math.min(targetDrain, drainLevel + FILL_SPEED);
-  } else if (drainLevel > targetDrain) {
-    drainLevel = Math.max(targetDrain, drainLevel - DRAIN_SPEED);
-    // As water drains, add trailing drops at the receding waterline
-    if (Math.random() < 0.25) {
-      addDrop(Math.random() * W, (1 - drainLevel) * H, 0.3);
+  // Animate drain/fill level
+  if (fillDir === "drain" && drainLevel > 0) {
+    drainLevel = Math.max(0, drainLevel - DRAIN_SPEED);
+    // Dripping at the receding waterline
+    if (Math.random() < 0.3) {
+      addDrop(Math.random() * W, (1 - drainLevel) * H, 0.28);
     }
+    if (drainLevel <= 0) { fillDir = "none"; pourActive = false; }
+  }
+
+  if (fillDir === "fill" && drainLevel < 1) {
+    drainLevel = Math.min(1, drainLevel + FILL_SPEED);
+
+    // Wander pour point slowly left/right
+    pourX += pourWander;
+    pourWander += (Math.random() - 0.5) * 0.0003;
+    pourWander  = Math.max(-0.003, Math.min(0.003, pourWander));
+    pourX       = Math.max(0.1, Math.min(0.9, pourX));
+
+    // Drop where the stream hits the water surface
+    var hitY = (1 - drainLevel) * H;
+    addDrop(pourX * W, hitY, 0.55);
+
+    // Splash ripples at impact point
+    if (Math.random() < 0.4) {
+      addDrop(pourX * W + (Math.random()-0.5)*30, hitY, 0.25);
+    }
+
+    if (drainLevel >= 1) { fillDir = "none"; pourActive = false; }
   }
 
   var prev = bufs[ BUF      % 3];
@@ -253,7 +312,7 @@ function stepSim() {
   gl.uniform1i(simU.cur,  1);
   gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, prev.tex);
   gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, cur.tex);
-  gl.uniform2f(simU.px, 1/SIM_W, 1/SIM_H);
+  gl.uniform2f(simU.px,    1/SIM_W, 1/SIM_H);
   gl.uniform1f(simU.drain, drainLevel);
 
   var drop = drops.shift();
@@ -278,10 +337,13 @@ function render() {
 
   gl.uniform1i(renderU.cur,  0);
   gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, cur.tex);
-  gl.uniform1f(renderU.time,  time);
-  gl.uniform2f(renderU.px,    1/SIM_W, 1/SIM_H);
-  gl.uniform1f(renderU.drain, drainLevel);
-  gl.uniform3f(renderU.tint,  tintR, tintG, tintB);
+  gl.uniform1f(renderU.time,       time);
+  gl.uniform2f(renderU.px,         1/SIM_W, 1/SIM_H);
+  gl.uniform1f(renderU.drain,      drainLevel);
+  gl.uniform3f(renderU.tint,       tintR, tintG, tintB);
+  gl.uniform1f(renderU.pourActive, pourActive ? 1.0 : 0.0);
+  gl.uniform1f(renderU.pourX,      pourX);
+  gl.uniform1f(renderU.waterlineY, 1.0 - drainLevel);
 
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }
