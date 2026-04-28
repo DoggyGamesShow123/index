@@ -2,12 +2,9 @@
   var cursor = document.getElementById("padCursor");
   var x = innerWidth / 2, y = innerHeight / 2;
 
-  // Track previous button states to detect press edges
   var prevButtons = [];
 
   // ── Audio unlock ──────────────────────────────────────────────────────
-  // Browsers block AudioContext until a real user gesture. We resume any
-  // suspended AudioContext the moment the user physically clicks/taps.
   var audioUnlocked = false;
   function unlockAudio() {
     if (audioUnlocked) return;
@@ -33,7 +30,7 @@
 
   // ── Helpers ───────────────────────────────────────────────────────────
   function fakeClick(cx, cy) {
-    unlockAudio(); // clicking is itself a gesture — unlock audio too
+    unlockAudio();
     var el = document.elementFromPoint(cx, cy);
     if (el) {
       el.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: cx, clientY: cy }));
@@ -60,7 +57,6 @@
       var dx = p.axes[0] || 0;
       var dy = p.axes[1] || 0;
 
-      // D-pad buttons (indices 12-15) also move cursor
       if (pressed(p, 12)) dy = -1;
       if (pressed(p, 13)) dy =  1;
       if (pressed(p, 14)) dx = -1;
@@ -77,28 +73,22 @@
         window.dispatchEvent(new PointerEvent("pointermove", { clientX: x, clientY: y }));
       }
 
-      // — A / Cross (button 0): click whatever the cursor is over —
+      // — A / Cross (button 0): click —
       if (justPressed(p, 0)) {
         fakeClick(x, y);
       }
 
-      // — B / Circle (button 1): go back (Alt+Left, same as keyboard shortcut) —
-      if (justPressed(p, 1)) {
+      // — Select (8) + Start (9) held together: go back —
+      var comboBack = pressed(p, 8) && pressed(p, 9);
+      var prevComboBack = prevButtons[8] && prevButtons[9];
+      if (comboBack && !prevComboBack) {
         document.dispatchEvent(new KeyboardEvent("keydown", {
           bubbles: true, cancelable: true,
           key: "ArrowLeft", code: "ArrowLeft", altKey: true
         }));
       }
 
-      // — Start (button 9): also go back / close game —
-      if (justPressed(p, 9)) {
-        document.dispatchEvent(new KeyboardEvent("keydown", {
-          bubbles: true, cancelable: true,
-          key: "ArrowLeft", code: "ArrowLeft", altKey: true
-        }));
-      }
-
-      // Save button states for edge detection next frame
+      // Save button states
       prevButtons = [];
       for (var i = 0; i < p.buttons.length; i++) {
         prevButtons[i] = p.buttons[i].pressed;
