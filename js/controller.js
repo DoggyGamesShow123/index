@@ -47,13 +47,15 @@
     return pressed(p, index) && !prevButtons[index];
   }
 
+  // Throttle cursor-move drops so we don't flood the sim
+  var lastDropX = -999, lastDropY = -999, DROP_DIST = 18;
+
   // ── Main loop ─────────────────────────────────────────────────────────
   function loop() {
     var pads = navigator.getGamepads ? navigator.getGamepads() : [];
     var p = pads[0];
 
     if (p) {
-      // — Left stick / D-pad: move cursor —
       var dx = p.axes[0] || 0;
       var dy = p.axes[1] || 0;
 
@@ -71,15 +73,23 @@
         cursor.style.left = (x - 13) + "px";
         cursor.style.top  = (y - 13) + "px";
         window.dispatchEvent(new PointerEvent("pointermove", { clientX: x, clientY: y }));
+
+        // Small ripple as cursor glides across water
+        var ddx = x - lastDropX, ddy = y - lastDropY;
+        if (ddx*ddx + ddy*ddy > DROP_DIST * DROP_DIST) {
+          if (window.waterDrop) window.waterDrop(x, y, 0.15);
+          lastDropX = x; lastDropY = y;
+        }
       }
 
-      // — A / Cross (button 0): click —
+      // — A / Cross: click + big splash —
       if (justPressed(p, 0)) {
+        if (window.waterDrop) window.waterDrop(x, y, 1.0);
         fakeClick(x, y);
       }
 
-      // — Select (8) + Start (9) held together: go back —
-      var comboBack = pressed(p, 8) && pressed(p, 9);
+      // — Select (8) + Start (9) combo: go back —
+      var comboBack     = pressed(p, 8) && pressed(p, 9);
       var prevComboBack = prevButtons[8] && prevButtons[9];
       if (comboBack && !prevComboBack) {
         document.dispatchEvent(new KeyboardEvent("keydown", {
@@ -88,7 +98,6 @@
         }));
       }
 
-      // Save button states
       prevButtons = [];
       for (var i = 0; i < p.buttons.length; i++) {
         prevButtons[i] = p.buttons[i].pressed;
