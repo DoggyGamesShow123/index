@@ -5,7 +5,7 @@ var COLORS = [
   { name: "red",    dot: "#f44",  tint: [0.75, 0.08, 0.12] },
   { name: "orange", dot: "#f90",  tint: [0.85, 0.45, 0.05] }
 ];
-var colorIdx = 0; // starts on blue
+var colorIdx = 0;
 
 var btn     = document.getElementById("drainBtn");
 var icon    = document.getElementById("drainIcon");
@@ -22,10 +22,10 @@ function loadAudio(src) {
 var sndValve = loadAudio(SND_VALVE);
 var sndFill  = loadAudio(SND_FILL);
 
-function applyColor() {
-  var c = COLORS[colorIdx];
-  icon.style.color      = c.dot;
-  btn.style.boxShadow   = "0 0 18px " + c.dot;
+function applyColor(idx) {
+  var c = COLORS[idx !== undefined ? idx : colorIdx];
+  icon.style.color    = c.dot;
+  btn.style.boxShadow = "0 0 18px " + c.dot;
   if (window.waterTint) window.waterTint(c.tint[0], c.tint[1], c.tint[2]);
 }
 
@@ -38,7 +38,6 @@ function runDrainSequence() {
   var nextIdx = (colorIdx + 1) % COLORS.length;
   var nc = COLORS[nextIdx];
 
-  // Play valve + start draining downward
   sndValve.currentTime = 0;
   sndValve.play().catch(function(){});
   if (window.waterDrain) window.waterDrain("drain");
@@ -47,7 +46,6 @@ function runDrainSequence() {
     nc.dot + "44 0%, transparent 70%)";
   overlay.style.opacity = "1";
 
-  // After 5 s: switch colour, start filling upward from bottom
   setTimeout(function () {
     colorIdx = nextIdx;
     applyColor();
@@ -71,6 +69,18 @@ btn.addEventListener("click", function () {
   if (!draining) runDrainSequence();
   if (window.waterDrop) window.waterDrop(innerWidth - 21, innerHeight - 21, 0.9);
 });
+
+// Called by index.html when a game launches — silently cycle to next colour
+window.drainCycleNext = function () {
+  colorIdx = (colorIdx + 1) % COLORS.length;
+  applyColor();
+};
+
+// Called by index.html when returning to menu — cycle back
+window.drainCyclePrev = function () {
+  colorIdx = (colorIdx + COLORS.length - 1) % COLORS.length;
+  applyColor();
+};
 
 applyColor();
 
