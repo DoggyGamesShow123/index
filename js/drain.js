@@ -5,7 +5,7 @@ var COLORS = [
   { name: "red",    dot: "#f44",  tint: [0.75, 0.08, 0.12] },
   { name: "orange", dot: "#f90",  tint: [0.85, 0.45, 0.05] }
 ];
-var colorIdx = 1;
+var colorIdx = 0;
 
 var btn     = document.getElementById("drainBtn");
 var icon    = document.getElementById("drainIcon");
