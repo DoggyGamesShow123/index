@@ -5,151 +5,73 @@
 <title>Launcher</title>
 
 <link rel="icon" type="image/x-icon" href="icons/launcher/favicon.ico">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  overflow:auto;
-  background:#04131f;
-  font-family:Arial,Helvetica,sans-serif;
-  color:white;
+  margin:0; width:100%; height:100%;
+  overflow:auto; background:#04131f;
+  font-family:Arial,Helvetica,sans-serif; color:white;
 }
-
-#ocean{
-  position:fixed;
-  inset:0;
-  z-index:0;
-}
-
-#ui{
-  position:relative;
-  z-index:2;
-}
-
-h1{
-  text-align:center;
-  margin:16px 0;
-}
-
+#ocean{ position:fixed; inset:0; z-index:0; }
+#ui{ position:relative; z-index:2; }
+h1{ text-align:center; margin:16px 0; }
 #launcher{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
-  gap:24px;
-  padding:32px;
+  gap:24px; padding:32px;
 }
-
-.game{
-  text-align:center;
-  cursor:pointer;
-}
-
-.icon-wrap{
-  position:relative;
-  width:96px;
-  margin:auto;
-}
-
+.game{ text-align:center; cursor:pointer; }
+.icon-wrap{ position:relative; width:96px; margin:auto; }
 .icon{
-  width:96px;
-  height:96px;
-  border-radius:18px;
-  overflow:hidden;
-  background:#222;
+  width:96px; height:96px; border-radius:18px;
+  overflow:hidden; background:#222;
   box-shadow:0 10px 25px rgba(0,0,0,.6);
 }
-
-.icon img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
+.icon img{ width:100%; height:100%; object-fit:cover; }
 .reflect{
-  position:absolute;
-  top:100%;
-  left:0;
-  width:100%;
-  height:50%;
-  background-repeat:no-repeat;
-  background-size:100% 100%;
-  transform:scaleY(-1);
-  opacity:.35;
-  filter:blur(2px);
+  position:absolute; top:100%; left:0; width:100%; height:50%;
+  background-repeat:no-repeat; background-size:100% 100%;
+  transform:scaleY(-1); opacity:.35; filter:blur(2px);
   mask-image:linear-gradient(to bottom, rgba(0,0,0,.6), transparent);
 }
-
-.label{
-  margin-top:8px;
-  font-size:14px;
-}
-
-#player{
-  position:fixed;
-  inset:0;
-  background:black;
-  display:none;
-  z-index:10;
-}
-
-#player iframe{
-  width:100%;
-  height:100%;
-  border:0;
-}
-
+.label{ margin-top:8px; font-size:14px; }
+#player{ position:fixed; inset:0; background:black; display:none; z-index:10; }
+#player iframe{ width:100%; height:100%; border:0; }
 #padCursor{
-  position:fixed;
-  width:26px;
-  height:26px;
-  border:2px solid rgba(200,240,255,.9);
-  border-radius:50%;
-  pointer-events:none;
-  display:none;
-  z-index:9;
+  position:fixed; width:26px; height:26px;
+  border:2px solid rgba(200,240,255,.9); border-radius:50%;
+  pointer-events:none; display:none; z-index:9;
   box-shadow:0 0 12px rgba(120,200,255,.9);
 }
 
-/* ── Drain button ── */
+/* Drain button */
 #drainBtn{
-  position:fixed;
-  bottom:18px;
-  right:18px;
-  width:42px;
-  height:42px;
-  border-radius:50%;
+  position:fixed; bottom:18px; right:18px;
+  width:42px; height:42px; border-radius:50%;
   border:3px solid rgba(255,255,255,0.18);
-  background:rgba(0,0,0,0.35);
-  cursor:pointer;
-  z-index:20;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  backdrop-filter:blur(4px);
-  transition:border-color 0.3s, box-shadow 0.3s;
-  padding:0;
+  background:rgba(0,0,0,0.35); cursor:pointer;
+  z-index:20; display:flex; align-items:center;
+  justify-content:center; backdrop-filter:blur(4px);
+  transition:border-color 0.3s, box-shadow 0.3s; padding:0;
 }
 #drainBtn:hover{
   border-color:rgba(255,255,255,0.5);
   box-shadow:0 0 14px rgba(255,255,255,0.2);
 }
-#drainIcon{
-  font-size:18px;
-  line-height:1;
-  transition:color 0.3s;
+#drainIcon{ font-size:18px; line-height:1; transition:color 0.3s; }
+#drainOverlay{
+  position:fixed; inset:0; pointer-events:none;
+  z-index:1; opacity:0; transition:opacity 0.6s;
 }
 
-/* ── Drain colour-wash overlay ── */
-#drainOverlay{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:1;
-  opacity:0;
-  transition:opacity 0.6s;
+/* Back hint shown while game is open */
+#backHint{
+  position:fixed; top:10px; left:50%; transform:translateX(-50%);
+  background:rgba(0,0,0,0.55); color:rgba(255,255,255,0.7);
+  font:12px/1 Arial,sans-serif; padding:6px 14px; border-radius:20px;
+  pointer-events:none; z-index:15; display:none;
+  backdrop-filter:blur(4px);
 }
 </style>
 </head>
@@ -159,25 +81,22 @@ h1{
 <canvas id="ocean"></canvas>
 <div id="padCursor"></div>
 
-<!-- Secret drain / colour button -->
 <button id="drainBtn" title="??" aria-label="Color cycle">
   <span id="drainIcon">●</span>
 </button>
-
-<!-- Colour-wash overlay shown during drain -->
 <div id="drainOverlay"></div>
+
+<!-- Shown while a game is running -->
+<div id="backHint">Shift + Esc — return to launcher</div>
 
 <div id="ui">
 <h1>Launcher</h1>
-
 <div id="launcher">
 
   <!-- Sonic 1 -->
   <div class="game" data-url="games/Sonic1/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/Sonic1.jpg">
-      </div>
+      <div class="icon"><img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/Sonic1.jpg"></div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/Sonic1.jpg')"></div>
     </div>
     <div class="label">Sonic 1 (Mega Drive)</div>
@@ -186,9 +105,7 @@ h1{
   <!-- Sonic 4 EP1 -->
   <div class="game" data-url="games/sonic4ep1/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/Sonic4ep1.png">
-      </div>
+      <div class="icon"><img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/Sonic4ep1.png"></div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/Sonic4ep1.png')"></div>
     </div>
     <div class="label">Sonic 4 EP1</div>
@@ -197,9 +114,7 @@ h1{
   <!-- Sonic CD -->
   <div class="game" data-url="games/sonic%20CD/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/SonicCD.png">
-      </div>
+      <div class="icon"><img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/SonicCD.png"></div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/SonicCD.png')"></div>
     </div>
     <div class="label">Sonic CD</div>
@@ -208,9 +123,7 @@ h1{
   <!-- Postal 1 -->
   <div class="game" data-url="games/postal1/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/postal1.png">
-      </div>
+      <div class="icon"><img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/postal1.png"></div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/postal1.png')"></div>
     </div>
     <div class="label">Postal 1</div>
@@ -219,9 +132,7 @@ h1{
   <!-- Sega Saturn -->
   <div class="game" data-url="games/SATURN_EMULATOR/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/SATURN_EMULATOR.jpg">
-      </div>
+      <div class="icon"><img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/SATURN_EMULATOR.jpg"></div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/SATURN_EMULATOR.jpg')"></div>
     </div>
     <div class="label">Sega Saturn</div>
@@ -230,20 +141,16 @@ h1{
   <!-- Sonic 2 CC -->
   <div class="game" data-url="games/Sonic2cc/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/Sonic2cc.png">
-      </div>
+      <div class="icon"><img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/Sonic2cc.png"></div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/Sonic2cc.png')"></div>
     </div>
-    <div class="label">Sonic 2 CC(Requires ROM)</div>
+    <div class="label">Sonic 2 CC (Requires ROM)</div>
   </div>
 
   <!-- Super Mario 64 -->
   <div class="game" data-url="games/mario64/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/mario64.png">
-      </div>
+      <div class="icon"><img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/mario64.png"></div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/mario64.png')"></div>
     </div>
     <div class="label">Super Mario 64</div>
@@ -252,9 +159,7 @@ h1{
   <!-- Sonic Mania -->
   <div class="game" data-url="games/sonicmania/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/sonicmania.png">
-      </div>
+      <div class="icon"><img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/sonicmania.png"></div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/sonicmania.png')"></div>
     </div>
     <div class="label">Sonic Mania (use esc key for menu)</div>
@@ -263,9 +168,7 @@ h1{
   <!-- Sonic 3 A.I.R -->
   <div class="game" data-url="games/sonic3kair/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/sonic3kair.png">
-      </div>
+      <div class="icon"><img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/sonic3kair.png"></div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/sonic3kair.png')"></div>
     </div>
     <div class="label">Sonic 3 A.I.R (requires rom)</div>
@@ -274,9 +177,7 @@ h1{
   <!-- SRB2 Kart -->
   <div class="game" data-url="games/SRB2KART/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/SRB2KART.png">
-      </div>
+      <div class="icon"><img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/SRB2KART.png"></div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/SRB2KART.png')"></div>
     </div>
     <div class="label">SRB2 Kart</div>
@@ -285,9 +186,7 @@ h1{
   <!-- Sonic Worlds Next -->
   <div class="game" data-url="games/sonicworldsnext/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/sonicworldsnext.png">
-      </div>
+      <div class="icon"><img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/sonicworldsnext.png"></div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/sonicworldsnext.png')"></div>
     </div>
     <div class="label">Sonic Worlds Next</div>
@@ -296,9 +195,7 @@ h1{
   <!-- Fnaf 1 -->
   <div class="game" data-url="games/fnaf1/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/fnaf/fnaf1.png">
-      </div>
+      <div class="icon"><img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/fnaf/fnaf1.png"></div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/fnaf/fnaf1.png')"></div>
     </div>
     <div class="label">Fnaf 1</div>
@@ -307,9 +204,7 @@ h1{
   <!-- Fnaf 2 -->
   <div class="game" data-url="games/fnaf2/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/fnaf/fnaf2.webp">
-      </div>
+      <div class="icon"><img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/fnaf/fnaf2.webp"></div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/fnaf/fnaf2.webp')"></div>
     </div>
     <div class="label">Fnaf 2</div>
@@ -318,9 +213,7 @@ h1{
   <!-- Fnaf 3 -->
   <div class="game" data-url="games/fnaf3/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/fnaf/fnaf3.webp">
-      </div>
+      <div class="icon"><img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/fnaf/fnaf3.webp"></div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/fnaf/fnaf3.webp')"></div>
     </div>
     <div class="label">Fnaf 3</div>
@@ -329,9 +222,7 @@ h1{
   <!-- Fnaf 4 -->
   <div class="game" data-url="games/fnaf4/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/fnaf/fnaf4.webp">
-      </div>
+      <div class="icon"><img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/fnaf/fnaf4.webp"></div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/fnaf/fnaf4.webp')"></div>
     </div>
     <div class="label">Fnaf 4</div>
@@ -340,9 +231,7 @@ h1{
   <!-- Marble Blast -->
   <div class="game" data-url="games/marbleblast/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/marbleblast.png">
-      </div>
+      <div class="icon"><img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/marbleblast.png"></div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/marbleblast.png')"></div>
     </div>
     <div class="label">Marble Blast</div>
@@ -351,9 +240,7 @@ h1{
   <!-- Sonic Robo Blast 2 -->
   <div class="game" data-url="games/Srb2/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/Srb2.jpg">
-      </div>
+      <div class="icon"><img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/Srb2.jpg"></div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/Srb2.jpg')"></div>
     </div>
     <div class="label">Sonic Robo Blast 2</div>
@@ -362,9 +249,7 @@ h1{
   <!-- N-Gon -->
   <div class="game" data-url="games/N-Gon/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/N-Gon.webp">
-      </div>
+      <div class="icon"><img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/N-Gon.webp"></div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/N-Gon.webp')"></div>
     </div>
     <div class="label">N-Gon</div>
@@ -373,9 +258,7 @@ h1{
   <!-- Fnaf World -->
   <div class="game" data-url="games/w/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/w.webp">
-      </div>
+      <div class="icon"><img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/w.webp"></div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/w.webp')"></div>
     </div>
     <div class="label">Fnaf world</div>
@@ -384,9 +267,7 @@ h1{
   <!-- RetroArch -->
   <div class="game" data-url="games/RetroArch/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/RetroArch.png">
-      </div>
+      <div class="icon"><img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/RetroArch.png"></div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/RetroArch.png')"></div>
     </div>
     <div class="label">RetroArch</div>
@@ -395,9 +276,7 @@ h1{
   <!-- Knuckles' Chaotix -->
   <div class="game" data-url="games/KnucklesChaotix/index.html" data-openblank="0" onclick="launchGame(this)">
     <div class="icon-wrap">
-      <div class="icon">
-        <img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/KnucklesChaotix.jpeg">
-      </div>
+      <div class="icon"><img src="https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/KnucklesChaotix.jpeg"></div>
       <div class="reflect" style="background-image:url('https://raw.githubusercontent.com/DoggyGamesShow123/index/main/thumb/KnucklesChaotix.jpeg')"></div>
     </div>
     <div class="label">Knuckles' Chaotix</div>
@@ -413,33 +292,68 @@ h1{
 <script src="js/drain.js"></script>
 
 <script>
-const launcher = document.getElementById("launcher");
-const player   = document.getElementById("player");
+const launcher  = document.getElementById("launcher");
+const player    = document.getElementById("player");
+const backHint  = document.getElementById("backHint");
+const oceanCanvas = document.getElementById("ocean");
 let iframe = null;
 
 function launchGame(el) {
   const url   = el.dataset.url;
   const blank = el.dataset.openblank === "1";
-
   if (blank) { window.open(url, "_blank"); return; }
 
+  // Pause + unload water canvas to free GPU/RAM while game runs
   if (window.water) water.pause();
+  oceanCanvas.width = 1;
+  oceanCanvas.height = 1;
+
+  // Cycle water colour for when we return
+  if (window.drainCycleNext) drainCycleNext();
+
   launcher.style.opacity = "0";
+  launcher.style.pointerEvents = "none";
   player.style.display = "block";
+  backHint.style.display = "block";
+
   iframe = document.createElement("iframe");
   iframe.src = url;
   iframe.allow = "fullscreen;gamepad;autoplay";
   player.appendChild(iframe);
 }
 
+function closeGame() {
+  if (!iframe) return;
+
+  // Destroy iframe fully to free memory
+  iframe.src = "about:blank";
+  player.innerHTML = "";
+  player.style.display = "none";
+  backHint.style.display = "none";
+  iframe = null;
+
+  // Restore launcher
+  launcher.style.opacity = "1";
+  launcher.style.pointerEvents = "";
+
+  // Restore and resume water canvas at full size
+  oceanCanvas.width  = innerWidth;
+  oceanCanvas.height = innerHeight;
+  if (window.water) water.resume();
+
+  // Cycle colour back on return
+  if (window.drainCyclePrev) drainCyclePrev();
+}
+
 document.addEventListener("keydown", e => {
+  // Shift + Escape to close game
+  if (e.key === "Escape" && e.shiftKey) {
+    closeGame();
+    return;
+  }
+  // Keep old Alt+Arrow as fallback
   if (e.altKey && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
-    if (!iframe) return;
-    player.innerHTML = "";
-    player.style.display = "none";
-    launcher.style.opacity = "1";
-    iframe = null;
-    if (window.water) water.resume();
+    closeGame();
   }
 });
 </script>
