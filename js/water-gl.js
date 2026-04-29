@@ -267,4 +267,87 @@ function updateGlowColor() {
     gr = g*0.8+0.35; gg = r*0.6+0.25; gb = b*0.2;
   }
   gr=Math.min(1,gr); gg=Math.min(1,gg); gb=Math.min(1,gb);
-  var ri=Math.round(gr*255), gi=Math.round(gg*255), bi=Math.round(gb*255
+  var ri=Math.round(gr*255), gi=Math.round(gg*255), bi=Math.round(gb*255);
+  glowEl.style.background = [
+    "radial-gradient(circle,",
+    "rgba("+ri+","+gi+","+bi+",0.22) 0%,",
+    "rgba("+ri+","+gi+","+bi+",0.08) 40%,",
+    "transparent 70%)"
+  ].join("");
+}
+updateGlowColor();
+
+function showGlow(x, y) {
+  glowEl.style.left = x+"px";
+  glowEl.style.top  = y+"px";
+  if (!glowVisible) { glowVisible=true; glowEl.style.opacity="1"; }
+  clearTimeout(glowFadeTimer);
+  glowFadeTimer = setTimeout(function(){
+    glowVisible=false; glowEl.style.opacity="0";
+  }, 2000);
+}
+
+// ── Render loop ───────────────────────────────────────────────────────────
+function stepSim() {
+  if (fillDir==="drain" && drainLevel>0) {
+    drainLevel=Math.max(0, drainLevel-DRAIN_SPEED);
+    if (Math.random()<0.3) addDrop(Math.random()*W, (1-drainLevel)*H, 0.28);
+    if (drainLevel<=0) { fillDir="none"; pourActive=false; }
+  }
+  if (fillDir==="fill" && drainLevel<1) {
+    drainLevel=Math.min(1, drainLevel+FILL_SPEED);
+    pourX+=pourWander;
+    pourWander+=(Math.random()-0.5)*0.0003;
+    pourWander=Math.max(-0.003, Math.min(0.003, pourWander));
+    pourX=Math.max(0.1, Math.min(0.9, pourX));
+    var hitY=(1-drainLevel)*H;
+    addDrop(pourX*W, hitY, 0.55);
+    if (Math.random()<0.4) addDrop(pourX*W+(Math.random()-0.5)*30, hitY, 0.25);
+    if (drainLevel>=1) { fillDir="none"; pourActive=false; }
+  }
+
+  var prev=bufs[BUF%3], cur=bufs[(BUF+1)%3], next=bufs[(BUF+2)%3];
+  gl.useProgram(simProg);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, next.fb);
+  gl.viewport(0,0,SIM_W,SIM_H);
+  gl.uniform1i(simU.prev,0); gl.uniform1i(simU.cur,1);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,prev.tex);
+  gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,cur.tex);
+  gl.uniform2f(simU.px,1/SIM_W,1/SIM_H);
+  gl.uniform1f(simU.drain,drainLevel);
+  var drop=drops.shift();
+  if(drop){ gl.uniform2f(simU.drop,drop.x,drop.y); gl.uniform1f(simU.dropR,drop.r); gl.uniform1f(simU.dropStr,drop.str); }
+  else { gl.uniform1f(simU.dropStr,0.0); }
+  gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+  BUF=(BUF+1)%3;
+}
+
+function render() {
+  var cur=bufs[(BUF+1)%3];
+  gl.useProgram(renderProg);
+  gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+  gl.viewport(0,0,W,H);
+  gl.uniform1i(renderU.cur,0);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,cur.tex);
+  gl.uniform1f(renderU.time,time);
+  gl.uniform2f(renderU.px,1/SIM_W,1/SIM_H);
+  gl.uniform1f(renderU.drain,drainLevel);
+  gl.uniform3f(renderU.tint,tintR,tintG,tintB);
+  gl.uniform1f(renderU.pourActive,pourActive?1.0:0.0);
+  gl.uniform1f(renderU.pourX,pourX);
+  gl.uniform1f(renderU.waterlineY,1.0-drainLevel);
+  gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+}
+
+function loop() {
+  if(!paused){ time+=0.016; stepSim(); render(); }
+  requestAnimationFrame(loop);
+}
+loop();
+
+window.water = {
+  pause:  function(){ paused=true;  canvas.style.display="none";  glowEl.style.display="none"; },
+  resume: function(){ paused=false; canvas.style.display="block"; glowEl.style.display="block"; }
+};
+
+})();
