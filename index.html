@@ -36,7 +36,10 @@ h1{ text-align:center; margin:16px 0; }
   mask-image:linear-gradient(to bottom, rgba(0,0,0,.6), transparent);
 }
 .label{ margin-top:8px; font-size:14px; }
-#player{ position:fixed; inset:0; background:black; display:none; z-index:10; }
+#player{
+  position:fixed; inset:0; background:black;
+  display:none; z-index:10;
+}
 #player iframe{ width:100%; height:100%; border:0; }
 #padCursor{
   position:fixed; width:26px; height:26px;
@@ -65,7 +68,7 @@ h1{ text-align:center; margin:16px 0; }
   z-index:1; opacity:0; transition:opacity 0.6s;
 }
 
-/* Back hint shown while game is open */
+/* Back hint */
 #backHint{
   position:fixed; top:10px; left:50%; transform:translateX(-50%);
   background:rgba(0,0,0,0.55); color:rgba(255,255,255,0.7);
@@ -85,8 +88,6 @@ h1{ text-align:center; margin:16px 0; }
   <span id="drainIcon">●</span>
 </button>
 <div id="drainOverlay"></div>
-
-<!-- Shown while a game is running -->
 <div id="backHint">Shift + Esc — return to launcher</div>
 
 <div id="ui">
@@ -290,71 +291,104 @@ h1{ text-align:center; margin:16px 0; }
 <script src="js/water-gl.js"></script>
 <script src="js/controller.js"></script>
 <script src="js/drain.js"></script>
+<script src="js/sounds.js"></script>
+<script src="js/transitions.js"></script>
 
 <script>
-const launcher  = document.getElementById("launcher");
-const player    = document.getElementById("player");
-const backHint  = document.getElementById("backHint");
+const launcher    = document.getElementById("launcher");
+const player      = document.getElementById("player");
+const backHint    = document.getElementById("backHint");
 const oceanCanvas = document.getElementById("ocean");
-let iframe = null;
+
+let iframe       = null;
+let lastIconEl   = null;
+let lastIconRect = null;
+let stopReverse  = null;
 
 function launchGame(el) {
   const url   = el.dataset.url;
   const blank = el.dataset.openblank === "1";
   if (blank) { window.open(url, "_blank"); return; }
 
-  // Pause + unload water canvas to free GPU/RAM while game runs
-  if (window.water) water.pause();
-  oceanCanvas.width = 1;
-  oceanCanvas.height = 1;
+  const fromController = !!window._controllerClick;
+  const iconWrap = el.querySelector(".icon") || el;
+  lastIconEl   = el;
+  lastIconRect = iconWrap.getBoundingClientRect();
 
-  // Cycle water colour for when we return
-  if (window.drainCycleNext) drainCycleNext();
+  function doLaunch() {
+    if (window.water) water.pause();
+    oceanCanvas.width  = 1;
+    oceanCanvas.height = 1;
 
-  launcher.style.opacity = "0";
-  launcher.style.pointerEvents = "none";
-  player.style.display = "block";
-  backHint.style.display = "block";
+    if (window.drainCycleNext) drainCycleNext();
 
-  iframe = document.createElement("iframe");
-  iframe.src = url;
-  iframe.allow = "fullscreen;gamepad;autoplay";
-  player.appendChild(iframe);
+    launcher.style.opacity      = "0";
+    launcher.style.pointerEvents = "none";
+    player.style.display        = "block";
+    backHint.style.display      = "block";
+
+    iframe = document.createElement("iframe");
+    iframe.src   = url;
+    iframe.allow = "fullscreen;gamepad;autoplay";
+    player.appendChild(iframe);
+  }
+
+  if (fromController) {
+    window.transitionOpen(el, lastIconRect, doLaunch);
+  } else {
+    doLaunch();
+  }
 }
 
 function closeGame() {
   if (!iframe) return;
 
-  // Destroy iframe fully to free memory
-  iframe.src = "about:blank";
-  player.innerHTML = "";
-  player.style.display = "none";
-  backHint.style.display = "none";
-  iframe = null;
+  const fromController = !!window._controllerClick;
+  const iframeEl       = iframe;
+  const iconRect       = lastIconRect || {
+    left: innerWidth/2 - 48, top: innerHeight/2 - 48,
+    width: 96, height: 96
+  };
 
-  // Restore launcher
-  launcher.style.opacity = "1";
-  launcher.style.pointerEvents = "";
+  function doClose() {
+    iframeEl.src = "about:blank";
+    oceanCanvas.width  = innerWidth;
+    oceanCanvas.height = innerHeight;
+    if (window.water) water.resume();
+    if (window.drainCyclePrev) drainCyclePrev();
+    launcher.style.opacity      = "1";
+    launcher.style.pointerEvents = "";
+    backHint.style.display      = "none";
+    iframe = null;
+  }
 
-  // Restore and resume water canvas at full size
-  oceanCanvas.width  = innerWidth;
-  oceanCanvas.height = innerHeight;
-  if (window.water) water.resume();
+  function finalCleanup() {
+    player.innerHTML     = "";
+    player.style.display = "none";
+  }
 
-  // Cycle colour back on return
-  if (window.drainCyclePrev) drainCyclePrev();
+  if (fromController) {
+    if (stopReverse) stopReverse();
+    stopReverse = window.playReversed(
+      "sounds/fill-water-pot-fast-sound.flac",
+      function() { stopReverse = null; }
+    );
+
+    window.transitionClose(
+      iconRect,
+      iframeEl,
+      function() { doClose(); },
+      function() { finalCleanup(); }
+    );
+  } else {
+    doClose();
+    finalCleanup();
+  }
 }
 
 document.addEventListener("keydown", e => {
-  // Shift + Escape to close game
-  if (e.key === "Escape" && e.shiftKey) {
-    closeGame();
-    return;
-  }
-  // Keep old Alt+Arrow as fallback
-  if (e.altKey && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
-    closeGame();
-  }
+  if (e.key === "Escape" && e.shiftKey) { closeGame(); return; }
+  if (e.altKey && (e.key === "ArrowLeft" || e.key === "ArrowRight")) closeGame();
 });
 </script>
 
