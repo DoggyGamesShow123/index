@@ -1,7 +1,6 @@
 (function () {
   var cursor = document.getElementById("padCursor");
   var x = innerWidth / 2, y = innerHeight / 2;
-
   var prevButtons = [];
 
   // ── Audio unlock ──────────────────────────────────────────────────────
@@ -31,23 +30,25 @@
   // ── Helpers ───────────────────────────────────────────────────────────
   function fakeClick(cx, cy) {
     unlockAudio();
+    // Flag that this click came from the controller
+    window._controllerClick = true;
     var el = document.elementFromPoint(cx, cy);
     if (el) {
       el.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: cx, clientY: cy }));
       el.dispatchEvent(new PointerEvent("pointerup",   { bubbles: true, clientX: cx, clientY: cy }));
       el.dispatchEvent(new MouseEvent("click",         { bubbles: true, clientX: cx, clientY: cy }));
     }
+    // Clear flag after event propagation
+    setTimeout(function() { window._controllerClick = false; }, 50);
   }
 
   function pressed(p, index) {
     return p.buttons[index] && p.buttons[index].pressed;
   }
-
   function justPressed(p, index) {
     return pressed(p, index) && !prevButtons[index];
   }
 
-  // Throttle cursor-move drops so we don't flood the sim
   var lastDropX = -999, lastDropY = -999, DROP_DIST = 18;
 
   // ── Main loop ─────────────────────────────────────────────────────────
@@ -74,7 +75,6 @@
         cursor.style.top  = (y - 13) + "px";
         window.dispatchEvent(new PointerEvent("pointermove", { clientX: x, clientY: y }));
 
-        // Small ripple as cursor glides across water
         var ddx = x - lastDropX, ddy = y - lastDropY;
         if (ddx*ddx + ddy*ddy > DROP_DIST * DROP_DIST) {
           if (window.waterDrop) window.waterDrop(x, y, 0.15);
@@ -82,20 +82,23 @@
         }
       }
 
-      // — A / Cross: click + big splash —
+      // A / Cross: click + splash
       if (justPressed(p, 0)) {
         if (window.waterDrop) window.waterDrop(x, y, 1.0);
         fakeClick(x, y);
       }
 
-      // — Select (8) + Start (9) combo: go back —
+      // Select + Start combo: close game
       var comboBack     = pressed(p, 8) && pressed(p, 9);
       var prevComboBack = prevButtons[8] && prevButtons[9];
       if (comboBack && !prevComboBack) {
+        // Flag as controller-triggered close
+        window._controllerClick = true;
         document.dispatchEvent(new KeyboardEvent("keydown", {
           bubbles: true, cancelable: true,
-          key: "ArrowLeft", code: "ArrowLeft", altKey: true
+          key: "Escape", code: "Escape", shiftKey: true
         }));
+        setTimeout(function() { window._controllerClick = false; }, 50);
       }
 
       prevButtons = [];
