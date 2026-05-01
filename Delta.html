@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Sonic Delta</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: black;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* Main stage */
+  #stage {
+    position: fixed;
+    inset: 0;
+    background: black;
+  }
+
+  /* Viewport holding the emulator */
+  #viewport {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: 100vh;
+    aspect-ratio: 4 / 3;
+    transform: translate(-50%, -50%);
+    overflow: hidden;
+    background: black;
+    z-index: 3; /* ✅ ABOVE bezel */
+  }
+
+  /* Emulator iframe */
+  #emulator {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+
+  /* Bezel overlay (PURELY VISUAL) */
+  #bezel {
+    position: absolute;
+    inset: 0;
+    background: url("https://raw.githubusercontent.com/libretro/overlay-borders/master/16x9%20Collections/Nosh01%201440%20Plain/Sega-Genesis-16bit-Bezel-16x9-2560x1440.png")
+      center / contain no-repeat;
+    pointer-events: none; /* ✅ CLICK‑THROUGH */
+    z-index: 2;
+  }
+
+  /* Hide bezel on screens narrower than 16:9 */
+  @media (max-aspect-ratio: 16/9) {
+    #bezel {
+      display: none;
+    }
+  }
+</style>
+</head>
+
+<body>
+  <div id="stage">
+
+    <div id="viewport">
+      <iframe
+        id="emulator"
+        src="https://doggygamesshow123.github.io/knuckles/newer%20save%20added/sonicdelta.html"
+        allow="autoplay; fullscreen"
+      ></iframe>
+    </div>
+
+    <div id="bezel"></div>
+
+  </div>
+</body>
+</html>
