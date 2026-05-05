@@ -1,15 +1,69 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Sonic 1</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <style>
-    html,body{height:100%;margin:0;background:#000}
-    iframe{border:0;width:100%;height:100%;display:block;background:#000}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonic Delta Reloaded</title>
+    <style>
+        /* Centers the game on the page and gives it a dark background */
+        body {
+            background-color: #111;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* The main wrapper maintaining the 16:9 aspect ratio for the bezel */
+        .game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1280px;
+            aspect-ratio: 16 / 9;
+            background-color: #000;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        /* The iframe running the emulator - NOW FORCED TO 4:3 */
+        .emulator-frame {
+            position: absolute;
+            top: 0;
+            left: 50%; /* Pushes the left edge to the middle */
+            transform: translateX(-50%); /* Pulls it back exactly half its width to center it perfectly */
+            height: 100%;
+            aspect-ratio: 4 / 3; /* Forces the 4:3 box */
+            border: none;
+            z-index: 1;
+        }
+
+        /* The Sega Genesis Bezel Overlay */
+        .bezel-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://raw.githubusercontent.com/libretro/overlay-borders/master/16x9%20Collections/Nosh01%201440%20Plain/Sega-Genesis-16bit-Bezel-16x9-2560x1440.png');
+            background-size: cover;
+            background-position: center;
+            z-index: 2;
+            pointer-events: none; /* Lets your mouse clicks pass through the image into the game */
+        }
+    </style>
 </head>
 <body>
-  <iframe src="https://doggygamesshow123.github.io/knuckles/Delta.html" allowfullscreen sandbox="allow-forms allow-scripts allow-same-origin allow-pointer-lock allow-popups"></iframe>
+
+    <div class="game-container">
+        <iframe 
+            class="emulator-frame"
+            src="https://raw.githubusercontent.com/DoggyGamesShow123/gen/main/roms/sonic1.bin"
+            allow="autoplay; gamepad; microphone">
+        </iframe>
+        
+        <div class="bezel-overlay"></div>
+    </div>
+
 </body>
 </html>
